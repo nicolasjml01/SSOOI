@@ -3,7 +3,7 @@
 #Primera prueba evaluable
 
 # Función para mostrar la ayuda del programa
-mostrarAyuda() {
+function mostrarAyuda() {
     echo "Uso: ./citas.sh [opciones]"
     echo ""
     echo "Opciones:"
@@ -12,7 +12,7 @@ mostrarAyuda() {
 	echo "  -d <día_mes_año>                 Lista todas las citas de un día específico."
     echo "  -id <identificador>              Muestra una cita según su identificador."
 	echo "  -n <Nombre del paciente>         Especifica el nombre del paciente para añadir o buscar citas."
-    echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."
+    echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."S
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
     echo "Ejemplos de uso:"
@@ -32,7 +32,7 @@ mostrarAyuda() {
 }
 
 # Función para mostrar mensajes de error y ayuda básica
-mensajeError() {
+function mensajeError() {
 	echo ""
 	echo "Error: Parámetros incorrectos."
 	echo "Para ver la ayuda de uso, ejecuta:"
@@ -46,39 +46,30 @@ if [ "$#" -eq 0 ]; then
 fi
 
 # Verificar si se ha pasado la opción de ayuda (-h)
-if [ "$1" == "-h" ]; then
+if [ "$1" == "-h" ]; then 
     mostrarAyuda
 fi
 
-# Verificar que el primer argumento sea '-f' y que el segundo sea el nombre del fichero
-# -z comprueba que no este vacío el fichero
-if [ "$1" != "-f" ] || [ -z "$2" ]; then
-    mensajeError
-fi
-
-# Comprobar si el archivo tiene permisos de lectura
-if [ ! -r "$2" ]; then
-    echo "Error: El fichero '$2' no existe o no se puede leer."
-    exit 1
-fi
-
-# Guardar el nombre del archivo en una variable
-citas="$2"
-
-# Si solo se pasa el argumento '-f' con el nombre del fichero, mostramos su contenido
-# ESTO PODEMOS MODIFICARLO COMIENDONOS ARGUMENTOS EN EL WHILE PARA QUE VAYA EN CUALQUIER ORDEN (PREGUNTAR)###
-if [ "$#" -eq 2 ]; then
-    echo "Mostrando el contenido del fichero '$citas':"
-    cat "$citas"
-    exit 0
-fi
-
-# Nos comemos los 2 primeros argumentos -f y datos.txt para empezar a trabajar
-shift 2 # Saltamos el '-f' y el nombre del fichero
-
-# $# -> Numeros de argumentos que se le pasa
+# $# -> Numeros de argumentos que se le pasan (Borrar)
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+	-f)
+		shift
+			citas="$1"  # Guardar el nombre del archivo
+			if [ -z "$citas" ]; then # -z comprueba que el fichero no este vacio (Borrar)
+				mensajeError
+			fi
+			if [ ! -r "$citas" ]; then # -r Comprueba que se pueda leer (Borrar)
+				echo "Error: El fichero '$citas' no existe o no se puede leer."
+				exit 1
+			fi
+			shift
+			if [ "$#" -eq 0 ]; then
+				echo "Mostrando el contenido del fichero '$citas':"
+				cat "$citas"
+				exit 0
+			fi
+	;;
 	-a)
 		echo 'Entra en -a'
 		shift
@@ -87,7 +78,6 @@ while [ "$#" -gt 0 ]; do
 		echo 'Entra en -n'
 		shift
 		nombre="$1"
-		# Hay que controlar comerse el nombre etc
 	;;
 	-i)
 		shift
@@ -105,6 +95,7 @@ while [ "$#" -gt 0 ]; do
 		shift
 		id_cita="$1"
 	;;
+	# Podemos añadir una especialidad al final para añadir al fichero la especialidad. Puede ser un mensaje
 	*)
 		mensajeError
 	;;
