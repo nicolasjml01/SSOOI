@@ -14,14 +14,15 @@ function mostrarAyuda {
 	echo "  -d <día_mes_año>                 Lista todas las citas de un día específico."
     echo "  -id <identificador>              Muestra una cita según su identificador."
 	echo "  -n <Nombre del paciente>         Especifica el nombre del paciente para añadir o buscar citas."
-    echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."S
+    echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."
+	echo "	-e <Especialidad>				 Especifica la especialidad de la consulta"
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
     echo "Ejemplos de uso:"
     echo "Muestra el contenido del archivo de citas:  
 			./citas.sh -f datos.txt"
-    echo "Añade una cita con el nombre, hora de inicio y hora de fin:
-			./citas.sh -f datos.txt -a -n <Nombre Paciente> -i <Hora_Incio> -f <Hora_Fin>"
+    echo "Añade una cita con el nombre, hora de inicio, hora de fin- y especialidad:
+			./citas.sh -f datos.txt -a -n <Nombre Paciente> -i <Hora_Incio> -f <Hora_Fin> -e <Especialidad>"
     echo "Lista todas las citas del dia seleccionado:
 			./citas.sh -f datos.txt -d <Dia_Mes_Ano>"
     echo "Muestra la cita con ID dado:
@@ -85,7 +86,7 @@ while [ "$#" -gt 0 ]; do
 		# Podemos comprobar que el numeros de argumentos sea 6 (Para añadir archivos si no no se añade nada)
 		# Sin contar (-f datos.txt -a)
 		shift
-		if  [ -z "$1" ]; then
+		if  [ "$#" -eq 8 ]; then
 			mensajeError
 		fi
 	;;
@@ -110,6 +111,10 @@ while [ "$#" -gt 0 ]; do
 	-id)
 		shift
 		id_cita="$1"
+	;;
+	-e)
+		shift
+		especialidad="$1"
 	;;
 	# Podemos añadir una especialidad al final para añadir al fichero la especialidad. Puede ser un mensaje
 	*)
