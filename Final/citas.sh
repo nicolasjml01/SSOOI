@@ -1,6 +1,8 @@
 #!/bin/bash
 
-#Primera prueba evaluable
+# Primera prueba evaluable
+# Nicolás Joaquín Miranda Lizondo Y0676614Z
+# Marco Antonio Tovar Soto 70970286Z
 
 # Función para mostrar la ayuda del programa
 function mostrarAyuda {
@@ -51,12 +53,13 @@ if [ "$1" == "-h" ]; then
 fi
 
 # Inicializamos las variables
-archivo=""
+citas=""
 nombre=""
-inicio=""
-fin=""
+hora_inicio=""
+hora_fin=""
 dia=""
 id_cita=""
+especialidad=""
 
 # $# -> Numeros de argumentos que se le pasan (Borrar)
 while [ "$#" -gt 0 ]; do
