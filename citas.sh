@@ -16,18 +16,18 @@ function mostrarAyuda() {
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
     echo "Ejemplos de uso:"
-    echo "  ./citas.sh -f datos.txt                       		
-																Muestra el contenido del archivo de citas."
-    echo "  ./citas.sh -f datos.txt -a -n <Nombre Paciente> -i <Hora_Incio> -f <Hora_Fin>    
-																Añade una cita con el nombre, hora de inicio y hora de fin."
-    echo "  ./citas.sh -f datos.txt -d <Dia_Mes_Ano>            
-																Lista todas las citas del dia seleccionado."
-    echo "  ./citas.sh -f datos.txt -id <Identificador>         
-																Muestra la cita con ID dado."
-    echo "  ./citas.sh -f datos.txt -n <Nombre Paciente>        
-																Muestra una cita del paciente solicitado."
-    echo "  ./citas.sh -f datos.txt -i <Hora_Inicio>            
-																Muestra todas las citas que comienzan a las hora dada."
+    echo "Muestra el contenido del archivo de citas:  
+			./citas.sh -f datos.txt"
+    echo "Añade una cita con el nombre, hora de inicio y hora de fin:
+			./citas.sh -f datos.txt -a -n <Nombre Paciente> -i <Hora_Incio> -f <Hora_Fin>"
+    echo "Lista todas las citas del dia seleccionado:
+			./citas.sh -f datos.txt -d <Dia_Mes_Ano>"
+    echo "Muestra la cita con ID dado:
+			./citas.sh -f datos.txt -id <Identificador>"
+    echo "Muestra una cita del paciente solicitado.  
+			./citas.sh -f datos.txt -n <Nombre Paciente>"
+    echo "Muestra todas las citas que comienzan a las hora dada:
+			./citas.sh -f datos.txt -i <Hora_Inicio>"
     exit 0
 }
 
@@ -50,36 +50,44 @@ if [ "$1" == "-h" ]; then
     mostrarAyuda
 fi
 
+# Si añado aqui variables cuando las lea se almacenan. Pero creo que daria problemas si sigo
+# Ejecutando casos. O igual no, comprobar si se usa mas adelante
+nombre=""
 # $# -> Numeros de argumentos que se le pasan (Borrar)
 while [ "$#" -gt 0 ]; do
 	case "$1" in
 	-f)
 		shift
-			citas="$1"  # Guardar el nombre del archivo
-			if [ -z "$citas" ]; then # -z comprueba que el fichero no este vacio (Borrar)
-				mensajeError
-			fi
-			if [ ! -r "$citas" ]; then # -r Comprueba que se pueda leer (Borrar)
-				echo "Error: El fichero '$citas' no existe o no se puede leer."
-				exit 1
-			fi
-			shift
-			if [ "$#" -eq 0 ]; then
-				echo "Mostrando el contenido del fichero '$citas':"
-				cat "$citas"
-				exit 0
-			fi
+		citas="$1"  # Guardar el nombre del archivo
+		if [ -z "$citas" ]; then # -z comprueba que el argumento no este vacio (Borrar). No comprueba si el fichero esta vacio
+			mensajeError
+		fi
+		if [ ! -r "$citas" ]; then # -r Comprueba que se pueda leer (Borrar)
+			echo "Error: El fichero '$citas' no existe o no se puede leer."
+			exit 1
+		fi
+		shift
+		if [ -z "$1" ]; then
+			echo "Mostrando el contenido del fichero '$citas':"
+			cat "$citas"
+			exit 0
+		fi
 	;;
 	-a)
-		echo 'Entra en -a'
+		# Podemos comprobar que el numeros de argumentos sea 6 (Para añadir archivos si no no se añade nada)
+		# Sin contar (-f datos.txt -a)
 		shift
+		if  [ -z "$1" ]; then
+			mensajeError
+		fi
 	;;
 	-n)
-		echo 'Entra en -n'
 		shift
 		nombre="$1"
+		shift
 	;;
 	-i)
+		echo 'Entra en i'
 		shift
 		inicio="$1"
 	;;
@@ -100,5 +108,5 @@ while [ "$#" -gt 0 ]; do
 		mensajeError
 	;;
 esac
-
+# echo "$nombre" Comprobar a futuro (Borrar)
 done
