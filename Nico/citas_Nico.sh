@@ -15,6 +15,7 @@ function mostrarAyuda {
     echo "  -id <identificador>              Muestra una cita según su identificador."
 	echo "  -n <Nombre del paciente>         Especifica el nombre del paciente para añadir o buscar citas."
     echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."
+	echo "	-fi <Hora_Fin>					 Especifica la hora fin de la cita."
 	echo "	-e <Especialidad>				 Especifica la especialidad de la consulta"
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
@@ -42,6 +43,44 @@ function mensajeError {
 	echo "  ./citas.sh -h"
 	exit 1
 }
+# Funcion utilizada para comprobar si el argumento $1 esta vacio
+function comprobarArgumentoVacio {
+	if [ -z "$1" ]; then
+		echo "Error: Faltan valores/argumentos"
+		mensajeError
+    fi
+}
+
+# Función para convertir y validar la hora
+function convertirHora() {
+	hora_recibida="$1"
+
+    # Normalizamos la hora
+	# ^([0-9]{1,2})(:[0-9]{2})?$ -> Esto hace que se acepten formatos de 10 como 10:00 (Borrar)
+	# ^([0-9]{1,2})(:[0-9]{2})?$ -> ^? (Inicio Fin cadena). ? -> Opcional que haya 2 argumento (Borrar)
+    if [[ "$hora_recibida" =~ ^([0-9]{1,2})(:[0-9]{2})?$ ]]; then
+        hora="${BASH_REMATCH[1]}" # Extraemos la hora
+        minutos="${BASH_REMATCH[2]:-:00}" # Si no hay minutos, asumimos ":00"
+        hora_normalizada="$hora$minutos"
+
+        # Si la hora es de 1 digito le ponemos un 0 delante
+        if [ "$hora" -lt 10 ]; then
+            hora_normalizada="0$hora$minutos"
+        fi
+
+        # Comprobamos que la hora esté entre 07:00 y 21:00
+        if [ "$hora" -ge 7 ] && [ "$hora" -le 21 ]; then
+            return 0 # Indica éxito
+        else
+            echo "Error: La hora debe estar entre las 07:00 y las 21:00."
+            return 1 # Indica fallo
+        fi
+    else
+        echo "Error: Formato de hora incorrecto. Usa HH o HH:MM (por ejemplo, 10 o 10:00)."
+        return 1 # Indica fallo
+    fi
+}
+
 
 # Verificación inicial: Si no hay argumentos, mostrar el mensaje de error
 if [ "$#" -eq 0 ]; then
@@ -53,7 +92,11 @@ if [ "$1" == "-h" ]; then
     mostrarAyuda
 fi
 
-# Inicializamos las variables
+# Inicializamos la variable booleana para las posibles opciones
+flag_a="false"
+flag_f="false"
+
+# Inicializamos las variables a usar
 citas=""
 nombre=""
 hora_inicio=""
@@ -66,11 +109,11 @@ especialidad=""
 while [ "$#" -gt 0 ]; do
 	case "$1" in
 	-f)
+		flag_f="true"
 		shift
+		comprobarArgumentoVacio "$1"
 		citas="$1"  # Guardar el nombre del archivo
-		if [ -z "$citas" ]; then # -z comprueba que el argumento no este vacio (Borrar). No comprueba si el fichero esta vacio
-			mensajeError
-		fi
+		
 		if [ ! -r "$citas" ]; then # -r Comprueba que se pueda leer (Borrar)
 			echo "Error: El fichero '$citas' no existe o no se puede leer."
 			exit 1
@@ -83,26 +126,58 @@ while [ "$#" -gt 0 ]; do
 		fi
 	;;
 	-a)
-		# Podemos comprobar que el numeros de argumentos sea 6 (Para añadir archivos si no no se añade nada)
-		# Sin contar (-f datos.txt -a)
+		flag_a="true"
 		shift
-		if  [ "$#" -eq 8 ]; then
-			mensajeError
-		fi
+		comprobarArgumentoVacio "$1"
 	;;
 	-n)
 		shift
+		comprobarArgumentoVacio "$1"
+
+		# Concatenamos todos los argumentos del nombre hasta que llegue otro argumento
 		nombre="$1"
 		shift
+		while [[ "$#" -gt 0 && "$1" != -* ]]; do
+			nombre="$nombre $1"
+			shift
+		done
+
+		# Comprobamos que haya mas argumentos
+		if [ "$#" -eq 0 ]; then
+			# Aquí tendriamos que mostrar la cita con el nombre
+			echo "Aqui mostrariamos la cita a partir del nombre"
+		fi
 	;;
 	-i)
-		echo 'Entra en i'
 		shift
-		inicio="$1"
+		comprobarArgumentoVacio "$1"
+
+		# Convertir y validar la hora de inicio
+		convertirHora "$1"  # Llamamos a la función directamente
+		if [ $? -ne 0 ]; then
+			exit 1  # Sale si la hora es inválida
+		fi
+		
+		# Guardamos el valor devuelto por la función
+		hora_inicio=$(convertirHora "$1")
+		shift
+		
+		# Comprobar si no hay más argumentos y la bandera de -a no está activada
+		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+			echo "Aquí mostraríamos las citas a partir de la hora de inicio: $hora_inicio"
+			exit 0  # Finalizamos si no hay más opciones
+		fi
 	;;
-	-f)
+	-fi)
 		shift
-		fin="$1"
+		comprobarArgumentoVacio "$1"
+
+		# Convertir y validar la hora de fin
+		convertirHora "$1"  # Llamamos a la función directamente
+		if [ $? -ne 0 ]; then
+			exit 1  # Sale si la hora es inválida
+		fi
+		# Voy por aqui
 	;;
 	-d)
 		shift
@@ -121,5 +196,8 @@ while [ "$#" -gt 0 ]; do
 		mensajeError
 	;;
 esac
-# echo "$nombre" Comprobar a futuro (Borrar)
+#If opcionA es true añadir no se que
+# si no hacer otra 
+# si no otra, etc
+# Esto puede servir para introducir datos la verdad
 done
