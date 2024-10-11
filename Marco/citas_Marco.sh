@@ -92,7 +92,8 @@ while [ "$#" -gt 0 ]; do
 	;;
 	-n)
 		shift
-		nombre="$1"
+		nombre="$@"
+		grep "$nombre" "$citas" -A 5
 		shift
 	;;
 	-i)
@@ -107,10 +108,17 @@ while [ "$#" -gt 0 ]; do
 	-d)
 		shift
 		dia="$1"
+		grep  "$1" "$citas" -A 1 -B 5
+		#busca en el fichero datos.txt la linea que coincida con la fecha, y muestra por pantalla
+		#la fecha, y las 5 lineas anteriores a la señalada, y una posterior, para mostrar toda
+		#la informacion del paciente(borrar)
 	;;
 	-id)
 		shift
 		id_cita="$1"
+		grep  "$1" "$citas" -B 5
+		#hace lo mismo que la anterior
+
 	;;
 	-e)
 		shift
