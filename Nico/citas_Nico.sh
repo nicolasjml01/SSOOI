@@ -177,7 +177,7 @@ while [ "$#" -gt 0 ]; do
 		if [ $? -ne 0 ]; then
 			exit 1  # Sale si la hora es inválida
 		fi
-		# Voy por aqui
+		# Voy por aqui ahorita
 	;;
 	-d)
 		shift
