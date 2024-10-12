@@ -33,6 +33,7 @@ function mostrarAyuda {
 			./citas.sh -f datos.txt -i <Hora_Inicio>"
     exit 0
 }
+
 # Función para mostrar mensajes de error y ayuda básica
 function mensajeError {
 	echo ""
@@ -41,6 +42,7 @@ function mensajeError {
 	echo "  ./citas.sh -h"
 	exit 1
 }
+
 # Funcion utilizada para comprobar si el argumento $1 esta vacio
 function comprobarArgumentoVacio {
 	if [ -z "$1" ]; then
@@ -48,6 +50,7 @@ function comprobarArgumentoVacio {
 		mensajeError
     fi
 }
+
 # Función para convertir y validar la hora
 function convertirHora() {
 	hora_recibida="$1"
@@ -78,6 +81,44 @@ function convertirHora() {
         return 1 # Indica fallo
     fi
 }
+function validarFecha() {
+    fecha="$1"
+
+    # Expresión regular para los formatos:
+    # 1. d/mm/aa (un dígito para el día y dos para el mes)
+    # 2. dd/mm/aa (dos dígitos para el día y dos para el mes)
+    # 3. d_mm_aa (un dígito para el día y dos para el mes, guiones bajos)
+    # 4. dd_mm_aa (dos dígitos para el día y mes, guiones bajos)
+    # 5. ddmmaño (sin separadores, pero el mes y el año son siempre de 2 dígitos)
+    if [[ "$fecha" =~ ^([0-9]{1,2})[-/_]?([0-9]{2})[-/_]?([0-9]{2})$ ]]; then
+        dia="${BASH_REMATCH[1]}"
+        mes="${BASH_REMATCH[2]}"
+        anio="${BASH_REMATCH[3]}"
+
+        # Validar que el mes esté entre 01 y 12
+        if (( $mes < 1 || $mes > 12 )); then
+            echo "Error: El mes debe estar entre 01 y 12."
+            return 1
+        fi
+
+        # Validar que el día esté entre 01 y 31
+        if (( $dia < 1 || $dia > 31 )); then
+            echo "Error: El día debe estar entre 01 y 31."
+            return 1
+        fi
+
+        # Convertimos la fecha al formato dd_mm_aa
+        # Aseguramos que el día tenga siempre dos dígitos
+        printf -v dia_formateado "%02d" "$dia"
+        fecha_normalizada="${dia_formateado}_${mes}_${anio}"
+        echo "$fecha_normalizada"
+        return 0
+    else
+        echo "Error: Fecha no válida. Introduzca la fecha en formato d/mm/aa, dd/mm/aa, d_mm_aa, dd_mm_aa, o ddmmaño."
+        return 1
+    fi
+}
+
 # Función para obtener el último ID de cita desde el archivo
 function obtener_ultimo_id() {
     local fichero=$1
@@ -175,6 +216,7 @@ while [ "$#" -gt 0 ]; do
 		fi
 	;;
 	-a)
+		# Hay que ver que pasa si -a es la ultima de las opciones (Borrar)
 		flag_a="true"
 		shift
 		comprobarArgumentoVacio "$1"
@@ -218,11 +260,10 @@ while [ "$#" -gt 0 ]; do
 		comprobarArgumentoVacio "$1"
 
 		# Convertir y validar la hora de fin
-		convertirHora "$1"  # Llamamos a la función directamente
+		hora_fin="$(convertirHora "$1")"		
 		if [ $? -ne 0 ]; then
 			exit 1  # Sale si la hora es inválida
 		fi
-		hora_fin="$(convertirHora "$1")"
 		shift
 
 	;;
@@ -230,10 +271,18 @@ while [ "$#" -gt 0 ]; do
 		shift
 		comprobarArgumentoVacio "$1"
 
-		fecha="$1"
+		# Validar y normalizar la fecha
+		fecha=$(validarFecha "$1")
+		# Comprobar si hubo un error en la validación de la fecha
+		if [ $? -ne 0 ]; then
+			echo "Fecha introducida incorrectamente"
+			exit 1  # Sale si la fecha es inválida
+		fi
+		shift
+
 		# Comprobar si no hay más argumentos y la bandera de -a no está activada
 		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-			echo "Aquí mostraríamos las citas a del dia: $fecha"
+			echo "Aquí mostraríamos las citas del día: $fecha"
 			exit 0  # Finalizamos si no hay más opciones
 		fi
 	;;
