@@ -16,7 +16,6 @@ function mostrarAyuda {
 	echo "  -n <Nombre del paciente>         Especifica el nombre del paciente para añadir o buscar citas."
     echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."
 	echo "	-fi <Hora_Fin>					 Especifica la hora fin de la cita."
-	echo "	-e <Especialidad>				 Especifica la especialidad de la consulta"
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
     echo "Ejemplos de uso:"
@@ -68,6 +67,7 @@ function convertirHora() {
 
         # Comprobamos que la hora esté entre 07:00 y 21:00
         if [ "$hora" -ge 7 ] && [ "$hora" -le 21 ]; then
+			echo "$hora_normalizada" # Imprime la hora para capturarla (Borrar)
             return 0 # Indica éxito
         else
             echo "Error: La hora debe estar entre las 07:00 y las 21:00."
@@ -103,6 +103,7 @@ function validar_datos() {
     local hora_fin=$3
     local fecha=$4
 
+	echo "$nombre"
     if [[ -z "$nombre" || -z "$hora_ini" || -z "$hora_fin" || -z "$fecha" ]]; then
         echo "Error: Todos los campos deben ser rellenados."
         return 1
@@ -200,13 +201,10 @@ while [ "$#" -gt 0 ]; do
 		comprobarArgumentoVacio "$1"
 
 		# Convertir y validar la hora de inicio
-		convertirHora "$1"  # Llamamos a la función directamente
+		hora_inicio=$(convertirHora "$1")
 		if [ $? -ne 0 ]; then
 			exit 1  # Sale si la hora es inválida
 		fi
-		
-		# Guardamos el valor devuelto por la función
-		hora_inicio=$(convertirHora "$1")
 		shift
 		
 		# Comprobar si no hay más argumentos y la bandera de -a no está activada
@@ -230,15 +228,18 @@ while [ "$#" -gt 0 ]; do
 	;;
 	-d)
 		shift
+		comprobarArgumentoVacio "$1"
+
 		fecha="$1"
+		# Comprobar si no hay más argumentos y la bandera de -a no está activada
+		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+			echo "Aquí mostraríamos las citas a del dia: $fecha"
+			exit 0  # Finalizamos si no hay más opciones
+		fi
 	;;
 	-id)
 		shift
 		id_cita="$1"
-	;;
-	-e)
-		shift
-		especialidad="$1"
 	;;
 	# Podemos añadir una especialidad al final para añadir al fichero la especialidad. Puede ser un mensaje
 	*)
@@ -250,6 +251,10 @@ esac
 if [[ $flag_a == true && $flag_f == true ]]; then
     # Validamos que no haya campos vacíos
     if validar_datos "$nombre" "$hora_ini" "$hora_fin" "$fecha"; then
+	echo "$nombre"
+	echo "$hora_ini"
+	echo "$hora_fin"
+	echo "$fecha"
         especialidad=$(seleccionar_especialidad)
 
         # Generamos el nuevo ID sumando 1 al último ID encontrado en el fichero
