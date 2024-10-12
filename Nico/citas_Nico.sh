@@ -296,14 +296,10 @@ while [ "$#" -gt 0 ]; do
 	;;
 esac
 
-
+## EMPEZAMOS LUEGO DE AQUI DA ERRORES
 if [[ $flag_a == true && $flag_f == true ]]; then
     # Validamos que no haya campos vacíos
-    if validar_datos "$nombre" "$hora_ini" "$hora_fin" "$fecha"; then
-	echo "$nombre"
-	echo "$hora_ini"
-	echo "$hora_fin"
-	echo "$fecha"
+    if validar_datos "$nombre" "$hora_inicio" "$hora_fin" "$fecha"; then
         especialidad=$(seleccionar_especialidad)
 
         # Generamos el nuevo ID sumando 1 al último ID encontrado en el fichero
