@@ -119,59 +119,6 @@ function validarFecha() {
     fi
 }
 
-# Función para obtener el último ID de cita desde el archivo
-function obtener_ultimo_id() {
-    local fichero=$1
-    local ultimo_id=0
-    
-    if [[ -f "$fichero" ]]; then
-        while IFS= read -r linea; do
-            if [[ $linea == ID:* ]]; then
-                id_str=$(echo "$linea" | cut -d "_" -f 2)  # Extraer la parte del ID después del "_"
-                ultimo_id=$id_str
-            fi
-        done < "$fichero"
-    else
-        echo "El archivo $fichero no existe. Se creará un nuevo archivo."
-    fi
-    echo $ultimo_id
-}
-
-# Función para validar que los datos no estén vacíos
-function validar_datos() {
-    local nombre=$1
-    local hora_ini=$2
-    local hora_fin=$3
-    local fecha=$4
-
-	echo "$nombre"
-    if [[ -z "$nombre" || -z "$hora_ini" || -z "$hora_fin" || -z "$fecha" ]]; then
-        echo "Error: Todos los campos deben ser rellenados."
-        return 1
-    fi
-
-    return 0
-}
-
-# Función para seleccionar una especialidad
-function seleccionar_especialidad() {
-    local especialidades=("Enfermería" "Atención primaria" "Pediatría" "Cardiología" "Odontología")
-    echo "Seleccione una especialidad:"
-    for i in "${!especialidades[@]}"; do
-        echo "$((i+1)). ${especialidades[i]}"
-    done
-    
-    while true; do
-        read -p "Introduzca el número de la especialidad: " opcion
-        if [[ $opcion -ge 1 && $opcion -le ${#especialidades[@]} ]]; then
-            echo "${especialidades[opcion-1]}"
-            break
-        else
-            echo "Por favor, elija una opción válida."
-        fi
-    done
-}
-
 # Verificación inicial: Si no hay argumentos, mostrar el mensaje de error
 if [ "$#" -eq 0 ]; then
     mensajeError
@@ -296,34 +243,68 @@ while [ "$#" -gt 0 ]; do
 	;;
 esac
 
-## EMPEZAMOS LUEGO DE AQUI DA ERRORES
-if [[ $flag_a == true && $flag_f == true ]]; then
-    # Validamos que no haya campos vacíos
-    if validar_datos "$nombre" "$hora_inicio" "$hora_fin" "$fecha"; then
-        especialidad=$(seleccionar_especialidad)
-
-        # Generamos el nuevo ID sumando 1 al último ID encontrado en el fichero
-        ultimo_id=$(obtener_ultimo_id "$citas")
-        nuevo_id=$((ultimo_id + 1))
-
-        # Generamos el nuevo ID de la cita basado en la fecha y el nuevo ID
-        id_cita="${fecha//_/}_${nuevo_id}"
-
-        # Añadimos la cita al archivo citas (datos.txt)
-        {
-            echo "PACIENTE: $nombre"
-            echo "ESPECIALIDAD: $especialidad"
-            echo "HORA_INICIAL: $hora_ini"
-            echo "HORA_FINAL: $hora_fin"
-            echo "DIA: $fecha"
-            echo "ID: $id_cita"
-            echo ""
-        } >> "$citas"
-
-        echo "Cita añadida correctamente."
-    else
-        echo "Error en los datos introducidos. No se ha podido añadir la cita."
-    fi
-fi
-
 done
+
+# Verificar si ambos flags están en true
+if [[ "$flag_a" == "true" && "$flag_f" == "true" ]]; then
+
+    # Verificar si las variables están rellenadas
+    if [[ -n "$nombre" && -n "$hora_inicio" && -n "$hora_fin" && -n "$fecha" ]]; then
+
+        # Preguntar al usuario la especialidad
+        echo "Selecciona el motivo de la consulta (introduce el número correspondiente):"
+        echo "1. Enfermería"
+        echo "2. Atención primaria"
+        echo "3. Cardiología"
+        echo "4. Dermatología"
+        echo "5. Ginecología"
+        read -p "Opción: " opcion_especialidad
+
+        # Asignar la especialidad en base a la elección del usuario
+        case $opcion_especialidad in
+            1) especialidad="Enfermería" ;;
+            2) especialidad="Atención primaria" ;;
+            3) especialidad="Cardiología" ;;
+            4) especialidad="Dermatología" ;;
+            5) especialidad="Ginecología" ;;
+            *) echo "Opción no válida. Saliendo..."; exit 1 ;;
+        esac
+
+        # Obtener el último ID del archivo documentos.txt y calcular el nuevo ID
+        if [[ -f documentos.txt ]]; then
+            ultimo_id=$(grep -oP 'ID: \K\d+' documentos.txt | tail -n 1)
+            if [[ -z "$ultimo_id" ]]; then
+                nuevo_id=1
+            else
+                nuevo_id=$((ultimo_id + 1))
+            fi
+        else
+            nuevo_id=1
+        fi
+
+        # Extraer el día, mes y año de la fecha para el formato de ID
+        dia=$(echo "$fecha" | cut -d'_' -f1)
+        mes=$(echo "$fecha" | cut -d'_' -f2)
+        anio=$(echo "$fecha" | cut -d'_' -f3)
+        id="${dia}${mes}${anio}_${nuevo_id}"
+
+        # Formatear la información de la cita
+        cita="
+PACIENTE: $nombre
+ESPECIALIDAD: $especialidad
+HORA_INICIAL: $hora_inicio
+HORA_FINAL: $hora_fin
+DIA: $fecha
+ID: $id
+"
+        # Añadir la cita al archivo datos.txt
+        echo "$cita" >> "$citas"
+        echo "Cita añadida correctamente a datos.txt."
+    else
+        echo "Error: Las variables nombre, hora_inicio, hora_fin o fecha no están inicializadas."
+        exit 1
+    fi
+else
+    echo "Error: Los flags flag_a o flag_f no están en true."
+    exit 1
+fi
