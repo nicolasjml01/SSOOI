@@ -187,6 +187,8 @@ while [ "$#" -gt 0 ]; do
 		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
 			# Aquí tendriamos que mostrar la cita con el nombre
 			echo "Aqui mostrariamos la cita a partir del nombre: $nombre"
+            grep "$nombre" "$citas" -A 5
+
 			exit 0
 		fi
 	;;
@@ -223,7 +225,6 @@ while [ "$#" -gt 0 ]; do
         # Si la función convertirHora tuvo éxito, capturamos la hora
         hora_fin="$1"
         shift
-
 	;;
 	-d)
 		shift
@@ -242,16 +243,32 @@ while [ "$#" -gt 0 ]; do
 		# Comprobar si no hay más argumentos y la bandera de -a no está activada
 		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
 			echo "Aquí mostraríamos las citas del día: $fecha"
+            grep  "$fecha" "$citas" -A 1 -B 5
 			exit 0  # Finalizamos si no hay más opciones
 		fi
 	;;
 	-id)
 		shift
+		comprobarArgumentoVacio "$1"
+
 		id_cita="$1"
+        
+		if [ $? -ne 0 ]; then
+			echo "Id introducido incorrectamente"
+			exit 1  # Sale si el id es inválida
+		fi
+		shift
+
+		# Comprobar si no hay más argumentos y la bandera de -a no está activada
+		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+			echo "Aquí mostraríamos las citas del id: $id_citas"
+		    grep  "$id_cita" "$citas" -B 5
+			exit 0  # Finalizamos si no hay más opciones
+		fi
 	;;
 	# Podemos añadir una especialidad al final para añadir al fichero la especialidad. Puede ser un mensaje
 	*)
-		mensajeError
+        mensajeError
 	;;
 esac
 
