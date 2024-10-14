@@ -52,6 +52,7 @@ function comprobarArgumentoVacio {
 }
 
 # Función para convertir y validar la hora
+# CAMBIAR QUE SEAN HORAS EXACTAS (C1)
 function convertirHora() {
 	hora_recibida="$1"
 
@@ -81,6 +82,7 @@ function convertirHora() {
         return 1 # Indica fallo
     fi
 }
+
 function validarFecha() {
     fecha="$1"
 
@@ -95,21 +97,41 @@ function validarFecha() {
         mes="${BASH_REMATCH[2]}"
         anio="${BASH_REMATCH[3]}"
 
+        dia_formateado=$(echo "$dia" | sed 's/^0*//')   #quitar el primer 0 si existe
+        mes_formateado=$(echo "$mes" | sed 's/^0*//')   #en formato del .txt aparece sin 0
+
         # Validar que el mes esté entre 01 y 12
-        if (( $mes < 1 || $mes > 12 )); then
+        if (( $mes_formateado < 1 || $mes_formateado > 12 )); then
             echo "Error: El mes debe estar entre 01 y 12."
             return 1
         fi
 
         # Validar que el día esté entre 01 y 31
-        if (( $dia < 1 || $dia > 31 )); then
+        if (( $dia_formateado < 1 || $dia_formateado > 31 )); then
             echo "Error: El día debe estar entre 01 y 31."
             return 1
         fi
 
+        # Validar que febrero tenga 28 o 29 días
+        if (( $mes_formateado == 2 )); then  #si el mes es febrero
+
+            if (( $dia_formateado == 29 )); then  #si el día es 29
+                if !(( $anio % 4 == 0 && $anio % 100 != 0 )) || (( $anio % 400 == 0 )); then  #si el año es divisible entre 4 o 400
+                    echo "Error: El mes de febrero no tiene 29 días."   #si no es divisible entre 4 o 400 se muestra el error
+                    return 1  #sale
+                fi
+            elif (( $dia_formateado > 28 )); then  #si el día es mayor a 28
+                echo "Error: El mes de febrero no tiene 29 dídas."   #si no es mayor a 28 se muestra el error
+                return 1  #sale
+            fi
+
+        fi
+
+
         # Convertimos la fecha al formato dd_mm_aa
         # Aseguramos que el día tenga siempre dos dígitos
-        printf -v dia_formateado "%02d" "$dia"
+        #dia_formateado=$(echo "$dia" | sed 's/^0*//')
+        #printf -v dia_formateado "%02d" "$dia"
         fecha_normalizada="${dia_formateado}_${mes}_${anio}"
         echo "$fecha_normalizada"
         return 0
@@ -166,7 +188,6 @@ while [ "$#" -gt 0 ]; do
 		# Hay que ver que pasa si -a es la ultima de las opciones (Borrar)
 		flag_a="true"
 		shift
-		comprobarArgumentoVacio "$1"
 	;;
 	-n)
 		shift
@@ -245,6 +266,7 @@ esac
 
 done
 
+# CAMBIAR LO DEL ID, VER QUE NO COINCIDE EN UN MISMO DIA A LA MISMA HORA EN LA MISMA ESPECIALIDAD
 # Verificar si ambos flags están en true
 if [[ "$flag_a" == "true" && "$flag_f" == "true" ]]; then
 
@@ -270,9 +292,10 @@ if [[ "$flag_a" == "true" && "$flag_f" == "true" ]]; then
             *) echo "Opción no válida. Saliendo..."; exit 1 ;;
         esac
 
+        
         # Obtener el último ID del archivo documentos.txt y calcular el nuevo ID
         if [[ -f documentos.txt ]]; then
-            ultimo_id=$(grep -oP 'ID: \K\d+' documentos.txt | tail -n 1)
+            ultimo_id=$(grep -oP 'ID: \K\d+' $citas | tail -n 1)
             if [[ -z "$ultimo_id" ]]; then
                 nuevo_id=1
             else
