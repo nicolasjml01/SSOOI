@@ -5,6 +5,7 @@
 # Marco Antonio Tovar Soto 70970286Z
 
 # Función para mostrar la ayuda del programa
+## CAMBIAR FUNCION DE AYUDA (BORRAR)
 function mostrarAyuda {
     echo "Uso: ./citas.sh [opciones]"
     echo ""
@@ -15,7 +16,7 @@ function mostrarAyuda {
     echo "  -id <identificador>              Muestra una cita según su identificador."
 	echo "  -n <Nombre del paciente>         Especifica el nombre del paciente para añadir o buscar citas."
     echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."
-	echo "	-e <Especialidad>				 Especifica la especialidad de la consulta"
+	echo "	-fi <Hora_Fin>					 Especifica la hora fin de la cita."
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
     echo "Ejemplos de uso:"
@@ -43,6 +44,87 @@ function mensajeError {
 	exit 1
 }
 
+# Funcion utilizada para comprobar si el argumento $1 esta vacio
+function comprobarArgumentoVacio {
+	if [ -z "$1" ]; then
+		echo "Error: Faltan valores/argumentos"
+		mensajeError
+    fi
+}
+
+# Función para convertir y validar la hora exacta, HH
+function convertirHora() {
+    hora_recibida="$1"
+
+    # Aceptamos solo formato HH (de 1 o 2 dígitos, sin minutos)
+    if [[ "$hora_recibida" =~ ^([0-9]{1,2})$ ]]; then
+        hora="${BASH_REMATCH[1]}"
+
+        # Comprobamos que la hora esté entre 7 y 21
+        if [ "$hora" -ge 7 ] && [ "$hora" -le 21 ]; then
+            return 0 # Indica éxito
+        else
+            echo "Error: La hora debe estar entre las 7 y las 21."
+            return 1 # Indica fallo
+        fi
+    else
+        echo "Error: Formato de hora incorrecto. Usa el formato HH (por ejemplo, 7 o 13)."
+        return 1 # Indica fallo
+    fi
+}
+
+function validarFecha() {
+    fecha="$1"
+
+    # Expresión regular para los formatos:
+    # 1. d/mm/aa (un dígito para el día y dos para el mes)
+    # 2. dd/mm/aa (dos dígitos para el día y dos para el mes)
+    # 3. d_mm_aa (un dígito para el día y dos para el mes, guiones bajos)
+    # 4. dd_mm_aa (dos dígitos para el día y mes, guiones bajos)
+    # 5. ddmmaño (sin separadores, pero el mes y el año son siempre de 2 dígitos)
+    if [[ "$fecha" =~ ^([0-9]{1,2})[-/_]?([0-9]{2})[-/_]?([0-9]{2})$ ]]; then
+        dia="${BASH_REMATCH[1]}"
+        mes="${BASH_REMATCH[2]}"
+        anio="${BASH_REMATCH[3]}"
+
+        dia_formateado=$(echo "$dia" | sed 's/^0*//')   #quitar el primer 0 si existe
+        mes_formateado=$(echo "$mes" | sed 's/^0*//')   #en formato del .txt aparece sin 0
+
+        # Validar que el mes esté entre 01 y 12
+        if (( $mes_formateado < 1 || $mes_formateado > 12 )); then
+            echo "Error: El mes debe estar entre 01 y 12."
+            return 1
+        fi
+
+        # Validar que el día esté entre 01 y 31
+        if (( $dia_formateado < 1 || $dia_formateado > 31 )); then
+            echo "Error: El día debe estar entre 01 y 31."
+            return 1
+        fi
+
+        # Validar que febrero tenga 28 o 29 días
+        if (( $mes_formateado == 2 )); then  #si el mes es febrero
+
+            if (( $dia_formateado == 29 )); then  #si el día es 29
+                if !(( $anio % 4 == 0 && $anio % 100 != 0 )) || (( $anio % 400 == 0 )); then  #si el año es divisible entre 4 o 400
+                    echo "Error: El mes de febrero no tiene 29 días."   #si no es divisible entre 4 o 400 se muestra el error
+                    return 1  #sale
+                fi
+            elif (( $dia_formateado > 28 )); then  #si el día es mayor a 28
+                echo "Error: El mes de febrero no tiene 29 dídas."   #si no es mayor a 28 se muestra el error
+                return 1  #sale
+            fi
+
+        fi
+        
+        fecha_normalizada="${dia_formateado}_${mes}_${anio}"
+        return 0
+    else
+        echo "Error: Fecha no válida. Introduzca la fecha en formato d/mm/aa, dd/mm/aa, d_mm_aa, dd_mm_aa, o ddmmaño."
+        return 1
+    fi
+}
+
 # Verificación inicial: Si no hay argumentos, mostrar el mensaje de error
 if [ "$#" -eq 0 ]; then
     mensajeError
@@ -53,12 +135,16 @@ if [ "$1" == "-h" ]; then
     mostrarAyuda
 fi
 
-# Inicializamos las variables
+# Inicializamos la variable booleana para las posibles opciones
+flag_a="false"
+flag_f="false"
+
+# Inicializamos las variables a usar
 citas=""
 nombre=""
 hora_inicio=""
 hora_fin=""
-dia=""
+fecha=""
 id_cita=""
 especialidad=""
 
@@ -66,11 +152,11 @@ especialidad=""
 while [ "$#" -gt 0 ]; do
 	case "$1" in
 	-f)
+		flag_f="true"
 		shift
+		comprobarArgumentoVacio "$1"
 		citas="$1"  # Guardar el nombre del archivo
-		if [ -z "$citas" ]; then # -z comprueba que el argumento no este vacio (Borrar). No comprueba si el fichero esta vacio
-			mensajeError
-		fi
+		
 		if [ ! -r "$citas" ]; then # -r Comprueba que se pueda leer (Borrar)
 			echo "Error: El fichero '$citas' no existe o no se puede leer."
 			exit 1
@@ -83,43 +169,156 @@ while [ "$#" -gt 0 ]; do
 		fi
 	;;
 	-a)
-		# Podemos comprobar que el numeros de argumentos sea 6 (Para añadir archivos si no no se añade nada)
-		# Sin contar (-f datos.txt -a)
+		# Hay que ver que pasa si -a es la ultima de las opciones (Borrar)
+		flag_a="true"
 		shift
-		if  [ "$#" -eq 8 ]; then
-			mensajeError
-		fi
 	;;
 	-n)
 		shift
-		nombre="$1"
-		shift
+		comprobarArgumentoVacio "$1"
+
+		# Concatenamos todos los argumentos del nombre hasta que llegue otro argumento
+		while [[ "$#" -gt 0 && "$1" != -* ]]; do
+			nombre="$nombre $1"
+			shift
+		done
+
+		# Comprobar si no hay más argumentos y la bandera de -a no está activada
+		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+			# Aquí tendriamos que mostrar la cita con el nombre
+			echo "Aqui mostrariamos la cita a partir del nombre: $nombre"
+			exit 0
+		fi
 	;;
 	-i)
-		echo 'Entra en i'
+        shift
+        comprobarArgumentoVacio "$1"
+
+        # Convertir y validar la hora de inicio
+        convertirHora "$1"  # Ejecutamos la función sin capturar la salida para mostrar errores
+        if [ $? -ne 0 ]; then
+            exit 1  # Sale si la hora es inválida
+        fi
+
+        # Si la función convertirHora tuvo éxito, capturamos la hora
+        hora_inicio="$1"
+        shift
+        
+        # Comprobar si no hay más argumentos y la bandera de -a no está activada
+        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+            echo "Aquí mostraríamos las citas a partir de la hora de inicio: $hora_inicio"
+            exit 0  # Finalizamos si no hay más opciones
+        fi
+        ;;
+	-fi)
 		shift
-		inicio="$1"
-	;;
-	-f)
-		shift
-		fin="$1"
+		comprobarArgumentoVacio "$1"
+
+		# Convertir y validar la hora de inicio
+        convertirHora "$1"  # Ejecutamos la función sin capturar la salida para mostrar errores
+        if [ $? -ne 0 ]; then
+            exit 1  # Sale si la hora es inválida
+        fi
+
+        # Si la función convertirHora tuvo éxito, capturamos la hora
+        hora_fin="$1"
+        shift
+
 	;;
 	-d)
 		shift
-		dia="$1"
+		comprobarArgumentoVacio "$1"
+
+		# Validar y normalizar la fecha
+		validarFecha "$1"
+		# Comprobar si hubo un error en la validación de la fecha
+		if [ $? -ne 0 ]; then
+			exit 1  # Sale si la fecha es inválida
+		fi
+        # Si la funcion validarFecha tuvo éxito, capturamos la fecha
+        fecha="$1"
+		shift
+
+		# Comprobar si no hay más argumentos y la bandera de -a no está activada
+		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+			echo "Aquí mostraríamos las citas del día: $fecha"
+			exit 0  # Finalizamos si no hay más opciones
+		fi
 	;;
 	-id)
 		shift
 		id_cita="$1"
-	;;
-	-e)
-		shift
-		especialidad="$1"
 	;;
 	# Podemos añadir una especialidad al final para añadir al fichero la especialidad. Puede ser un mensaje
 	*)
 		mensajeError
 	;;
 esac
-# echo "$nombre" Comprobar a futuro (Borrar)
+
 done
+
+# CAMBIAR LO DEL ID, VER QUE NO COINCIDE EN UN MISMO DIA A LA MISMA HORA EN LA MISMA ESPECIALIDAD
+# Verificar si ambos flags están en true
+if [[ "$flag_a" == "true" && "$flag_f" == "true" ]]; then
+
+    # Verificar si las variables están rellenadas
+    if [[ -n "$nombre" && -n "$hora_inicio" && -n "$hora_fin" && -n "$fecha" ]]; then
+
+        # Preguntar al usuario la especialidad
+        echo "Selecciona el motivo de la consulta (introduce el número correspondiente):"
+        echo "1. Enfermería"
+        echo "2. Atención primaria"
+        echo "3. Cardiología"
+        echo "4. Dermatología"
+        echo "5. Ginecología"
+        read -p "Opción: " opcion_especialidad
+
+        # Asignar la especialidad en base a la elección del usuario
+        case $opcion_especialidad in
+            1) especialidad="Enfermería" ;;
+            2) especialidad="Atención primaria" ;;
+            3) especialidad="Cardiología" ;;
+            4) especialidad="Dermatología" ;;
+            5) especialidad="Ginecología" ;;
+            *) echo "Opción no válida. Saliendo..."; exit 1 ;;
+        esac
+
+        
+        # Obtener el último ID del archivo documentos.txt y calcular el nuevo ID
+        if [[ -f documentos.txt ]]; then
+            ultimo_id=$(grep -oP 'ID: \K\d+' $citas | tail -n 1)
+            if [[ -z "$ultimo_id" ]]; then
+                nuevo_id=1
+            else
+                nuevo_id=$((ultimo_id + 1))
+            fi
+        else
+            nuevo_id=1
+        fi
+
+        # Extraer el día, mes y año de la fecha para el formato de ID
+        dia=$(echo "$fecha" | cut -d'_' -f1)
+        mes=$(echo "$fecha" | cut -d'_' -f2)
+        anio=$(echo "$fecha" | cut -d'_' -f3)
+        id="${dia}${mes}${anio}_${nuevo_id}"
+
+        # Formatear la información de la cita
+        cita="
+PACIENTE: $nombre
+ESPECIALIDAD: $especialidad
+HORA_INICIAL: $hora_inicio
+HORA_FINAL: $hora_fin
+DIA: $fecha
+ID: $id
+"
+        # Añadir la cita al archivo datos.txt
+        echo "$cita" >> "$citas"
+        echo "Cita añadida correctamente a datos.txt."
+    else
+        echo "Error: Las variables nombre, hora_inicio, hora_fin o fecha no están inicializadas."
+        exit 1
+    fi
+else
+    echo "Error: Los flags flag_a o flag_f no están en true."
+    exit 1
+fi

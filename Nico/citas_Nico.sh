@@ -5,6 +5,7 @@
 # Marco Antonio Tovar Soto 70970286Z
 
 # Función para mostrar la ayuda del programa
+## CAMBIAR FUNCION DE AYUDA (BORRAR)
 function mostrarAyuda {
     echo "Uso: ./citas.sh [opciones]"
     echo ""
@@ -51,34 +52,23 @@ function comprobarArgumentoVacio {
     fi
 }
 
-# Función para convertir y validar la hora
-# CAMBIAR QUE SEAN HORAS EXACTAS (C1)
+# Función para convertir y validar la hora exacta, HH
 function convertirHora() {
-	hora_recibida="$1"
+    hora_recibida="$1"
 
-    # Normalizamos la hora
-	# ^([0-9]{1,2})(:[0-9]{2})?$ -> Esto hace que se acepten formatos de 10 como 10:00 (Borrar)
-	# ^([0-9]{1,2})(:[0-9]{2})?$ -> ^? (Inicio Fin cadena). ? -> Opcional que haya 2 argumento (Borrar)
-    if [[ "$hora_recibida" =~ ^([0-9]{1,2})(:[0-9]{2})?$ ]]; then
-        hora="${BASH_REMATCH[1]}" # Extraemos la hora
-        minutos="${BASH_REMATCH[2]:-:00}" # Si no hay minutos, asumimos ":00"
-        hora_normalizada="$hora$minutos"
+    # Aceptamos solo formato HH (de 1 o 2 dígitos, sin minutos)
+    if [[ "$hora_recibida" =~ ^([0-9]{1,2})$ ]]; then
+        hora="${BASH_REMATCH[1]}"
 
-        # Si la hora es de 1 digito le ponemos un 0 delante
-        if [ "$hora" -lt 10 ]; then
-            hora_normalizada="0$hora$minutos"
-        fi
-
-        # Comprobamos que la hora esté entre 07:00 y 21:00
+        # Comprobamos que la hora esté entre 7 y 21
         if [ "$hora" -ge 7 ] && [ "$hora" -le 21 ]; then
-			echo "$hora_normalizada" # Imprime la hora para capturarla (Borrar)
             return 0 # Indica éxito
         else
-            echo "Error: La hora debe estar entre las 07:00 y las 21:00."
+            echo "Error: La hora debe estar entre las 7 y las 21."
             return 1 # Indica fallo
         fi
     else
-        echo "Error: Formato de hora incorrecto. Usa HH o HH:MM (por ejemplo, 10 o 10:00)."
+        echo "Error: Formato de hora incorrecto. Usa el formato HH (por ejemplo, 7 o 13)."
         return 1 # Indica fallo
     fi
 }
@@ -126,14 +116,8 @@ function validarFecha() {
             fi
 
         fi
-
-
-        # Convertimos la fecha al formato dd_mm_aa
-        # Aseguramos que el día tenga siempre dos dígitos
-        #dia_formateado=$(echo "$dia" | sed 's/^0*//')
-        #printf -v dia_formateado "%02d" "$dia"
+        
         fecha_normalizada="${dia_formateado}_${mes}_${anio}"
-        echo "$fecha_normalizada"
         return 0
     else
         echo "Error: Fecha no válida. Introduzca la fecha en formato d/mm/aa, dd/mm/aa, d_mm_aa, dd_mm_aa, o ddmmaño."
@@ -207,32 +191,38 @@ while [ "$#" -gt 0 ]; do
 		fi
 	;;
 	-i)
-		shift
-		comprobarArgumentoVacio "$1"
+        shift
+        comprobarArgumentoVacio "$1"
 
-		# Convertir y validar la hora de inicio
-		hora_inicio=$(convertirHora "$1")
-		if [ $? -ne 0 ]; then
-			exit 1  # Sale si la hora es inválida
-		fi
-		shift
-		
-		# Comprobar si no hay más argumentos y la bandera de -a no está activada
-		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-			echo "Aquí mostraríamos las citas a partir de la hora de inicio: $hora_inicio"
-			exit 0  # Finalizamos si no hay más opciones
-		fi
-	;;
+        # Convertir y validar la hora de inicio
+        convertirHora "$1"  # Ejecutamos la función sin capturar la salida para mostrar errores
+        if [ $? -ne 0 ]; then
+            exit 1  # Sale si la hora es inválida
+        fi
+
+        # Si la función convertirHora tuvo éxito, capturamos la hora
+        hora_inicio="$1"
+        shift
+        
+        # Comprobar si no hay más argumentos y la bandera de -a no está activada
+        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+            echo "Aquí mostraríamos las citas a partir de la hora de inicio: $hora_inicio"
+            exit 0  # Finalizamos si no hay más opciones
+        fi
+        ;;
 	-fi)
 		shift
 		comprobarArgumentoVacio "$1"
 
-		# Convertir y validar la hora de fin
-		hora_fin="$(convertirHora "$1")"		
-		if [ $? -ne 0 ]; then
-			exit 1  # Sale si la hora es inválida
-		fi
-		shift
+		# Convertir y validar la hora de inicio
+        convertirHora "$1"  # Ejecutamos la función sin capturar la salida para mostrar errores
+        if [ $? -ne 0 ]; then
+            exit 1  # Sale si la hora es inválida
+        fi
+
+        # Si la función convertirHora tuvo éxito, capturamos la hora
+        hora_fin="$1"
+        shift
 
 	;;
 	-d)
@@ -240,12 +230,13 @@ while [ "$#" -gt 0 ]; do
 		comprobarArgumentoVacio "$1"
 
 		# Validar y normalizar la fecha
-		fecha=$(validarFecha "$1")
+		validarFecha "$1"
 		# Comprobar si hubo un error en la validación de la fecha
 		if [ $? -ne 0 ]; then
-			echo "Fecha introducida incorrectamente"
 			exit 1  # Sale si la fecha es inválida
 		fi
+        # Si la funcion validarFecha tuvo éxito, capturamos la fecha
+        fecha="$1"
 		shift
 
 		# Comprobar si no hay más argumentos y la bandera de -a no está activada
