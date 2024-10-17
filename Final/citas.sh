@@ -10,28 +10,28 @@ function mostrarAyuda {
     echo "Uso: ./citas.sh [opciones]"
     echo ""
     echo "Opciones:"
-    echo "  -f datos.txt                     Muestra el contenido del fichero de citas."
-    echo "  -a                               Añade una cita."
-	echo "  -d <día_mes_año>                 Lista todas las citas de un día específico."
+    echo "  -f  <Fichero>                    Muestra el contenido del fichero de citas."
+    echo "  -a                               Añade una cita al registro de citas."
+	echo "  -n  <Nombre del paciente>        Muestra una cita por el nombre del paciente o añade el nombre a la cita."
+    echo "  -i  <Hora_inicio>                Lista las citas por hora de inicio o añade una cita a partir de cierta hora."
+	echo "  -d  <día_mes_año>                Lista todas las citas de un día específico."
     echo "  -id <identificador>              Muestra una cita según su identificador."
-	echo "  -n <Nombre del paciente>         Especifica el nombre del paciente para añadir o buscar citas."
-    echo "  -i <Hora inicio>                 Especifica la hora de inicio de la cita."
-	echo "	-fi <Hora_Fin>					 Especifica la hora fin de la cita."
+	echo "	-fi <Hora_Fin>					 Especifica la hora fin de la cita a añadir."
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
     echo "Ejemplos de uso:"
     echo "Muestra el contenido del archivo de citas:  
 			./citas.sh -f datos.txt"
-    echo "Añade una cita con el nombre, hora de inicio, hora de fin- y especialidad:
-			./citas.sh -f datos.txt -a -n <Nombre Paciente> -i <Hora_Incio> -f <Hora_Fin> -e <Especialidad>"
+    echo "Añade una cita con el nombre, hora de inicio, hora de fin y dia:
+			./citas.sh -f datos.txt -a -n Nicolas Marco Tovar Miranda -i 10 -fi 11 -d 15_07_24"
     echo "Lista todas las citas del dia seleccionado:
-			./citas.sh -f datos.txt -d <Dia_Mes_Ano>"
-    echo "Muestra la cita con ID dado:
-			./citas.sh -f datos.txt -id <Identificador>"
+			./citas.sh -f datos.txt -d 15_07_24"
+    echo "Muestra una cita con el ID dado:
+			./citas.sh -f datos.txt -id 15724_1"
     echo "Muestra una cita del paciente solicitado.  
-			./citas.sh -f datos.txt -n <Nombre Paciente>"
-    echo "Muestra todas las citas que comienzan a las hora dada:
-			./citas.sh -f datos.txt -i <Hora_Inicio>"
+			./citas.sh -f datos.txt -n Nicolas Marco Tovar Miranda"
+    echo "Muestra todas las citas que comienzan a la hora dada:
+			./citas.sh -f datos.txt -i 10"
     exit 0
 }
 
@@ -76,59 +76,35 @@ function convertirHora() {
 function validarFecha() {
     fecha="$1"
 
-    # Expresión regular para los formatos:
-    # 1. d/mm/aa (un dígito para el día y dos para el mes)
-    # 2. dd/mm/aa (dos dígitos para el día y dos para el mes)
-    # 3. d_mm_aa (un dígito para el día y dos para el mes, guiones bajos)
-    # 4. dd_mm_aa (dos dígitos para el día y mes, guiones bajos)
-    # 5. ddmmaño (sin separadores, pero el mes y el año son siempre de 2 dígitos)
-    if [[ "$fecha" =~ ^([0-9]{1,2})[-/_]?([0-9]{2})[-/_]?([0-9]{2})$ ]]; then
+    if [[ "$fecha" =~ ^([0-9]{1,2})_([0-9]{1,2})_([0-9]{2})$ ]]; then
         dia="${BASH_REMATCH[1]}"
         mes="${BASH_REMATCH[2]}"
         anio="${BASH_REMATCH[3]}"
 
-        dia_formateado=$(echo "$dia" | sed 's/^0*//')   #quitar el primer 0 si existe
-        mes_formateado=$(echo "$mes" | sed 's/^0*//')   #en formato del .txt aparece sin 0
+        # Eliminar ceros a la izquierda del día y el mes
+        dia_formateado=$(echo "$dia" | sed 's/^0*//')
+        mes_formateado=$(echo "$mes" | sed 's/^0*//')
 
-        # Validar que el mes esté entre 01 y 12
-        if (( $mes_formateado < 1 || $mes_formateado > 12 )); then
-            echo "Error: El mes debe estar entre 01 y 12."
+        # Validaciones
+        if (( mes_formateado < 1 || mes_formateado > 12 )); then
+            echo "Error: El mes debe estar entre 1 y 12."
+            return 1
+        fi
+        if (( dia_formateado < 1 || dia_formateado > 31 )); then
+            echo "Error: El día debe estar entre 1 y 31."
+            return 1
+        fi
+        if (( mes_formateado == 2 && dia_formateado > 28 )); then
+            echo "Error: El mes de febrero no tiene más de 28 días."
             return 1
         fi
 
-        # Validar que el día esté entre 01 y 31
-        if (( $dia_formateado < 1 || $dia_formateado > 31 )); then
-            echo "Error: El día debe estar entre 01 y 31."
-            return 1
-        fi
-
-        # Validar que febrero tenga 28 o 29 días
-        if (( $mes_formateado == 2 )); then  #si el mes es febrero
-
-            if (( $dia_formateado == 29 )); then  #si el día es 29
-                if !(( $anio % 4 == 0 && $anio % 100 != 0 )) || (( $anio % 400 == 0 )); then  #si el año es divisible entre 4 o 400
-                    echo "Error: El mes de febrero no tiene 29 días este año."   #si no es divisible entre 4 o 400 se muestra el error
-                    return 1  #sale
-                fi
-            elif (( $dia_formateado > 28 )); then  #si el día es mayor a 28
-                echo "Error: El mes de febrero no tiene más de 28 días."   #si no es mayor a 28 se muestra el error
-                return 1  #sale
-            fi
-
-        fi
-
-        #validar si un mes tiene 30 o 31 dias
-        if !(( $mes_formateado % 2 == 0 )); then  #si el mes es impar
-            if (( $dia_formateado == 31 )); then
-                echo "Error: El mes '$mes_formateado' no tiene 31 días."   
-                return 1  #sale
-            fi
-        fi
-        
-        fecha_normalizada="${dia_formateado}_${mes}_${anio}"
+        # Asignar la fecha normalizada (sin ceros a la izquierda) a una variable global
+        # Hacemos fehca como una variable global (Borrar)
+        fecha="${dia_formateado}_${mes_formateado}_${anio}"
         return 0
     else
-        echo "Error: Fecha no válida. Introduzca la fecha en formato d/mm/aa, dd/mm/aa, d_mm_aa, dd_mm_aa, o ddmmaño."
+        echo "Error: Fecha no válida. Introduzca la fecha en formato d_m_aa, dd_m_aa, d_mm_aa o dd_mm_aa."
         return 1
     fi
 }
@@ -190,14 +166,25 @@ while [ "$#" -gt 0 ]; do
 			shift
 		done
 
-		# Comprobar si no hay más argumentos y la bandera de -a no está activada
-		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-			# Aquí tendriamos que mostrar la cita con el nombre
-			echo "Aqui mostrariamos la cita a partir del nombre: $nombre"
-            grep "$nombre" "$citas" -A 5
+        # Comprobar si no hay más argumentos y la bandera de -a no está activada
+        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+            # Aquí mostraríamos la primera cita a partir del nombre
+            echo "Buscando la cita asignada a: $nombre"
+            
+            # Buscar el nombre en el archivo, limitar a la primera coincidencia
+            cita=$(grep -m 1 "$nombre" "$citas" -A 5)
 
-			exit 0
-		fi
+            # Verificar si se encontró alguna cita
+            if [[ -n "$cita" ]]; then
+                # Si se encuentra, mostrar la primera cita
+                echo "$cita"
+            else
+                # Si no se encuentra, mostrar el mensaje de error
+                echo "No hemos encontrado una cita asignada a ese nombre: $nombre"
+            fi
+
+            exit 0
+        fi
 	;;
 	-i)
         shift
@@ -215,7 +202,40 @@ while [ "$#" -gt 0 ]; do
         
         # Comprobar si no hay más argumentos y la bandera de -a no está activada
         if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-            grep "HORA_INICIAL: $hora_inicio" "$citas" -A 3 -B 2
+            echo "Buscando citas con hora inicial mayor o igual a: $hora_inicio"
+
+            # Usamos awk para buscar y comparar las horas iniciales y mostrar citas completas
+            awk -v hora_inicio="$hora_inicio" '
+            BEGIN { citas_encontradas = 0 }  # Inicializamos el contador de citas
+
+            /PACIENTE:/ { paciente_line = $0 }
+            /ESPECIALIDAD:/ { especialidad_line = $0 }
+            /HORA_INICIAL:/ {
+                split($0, arr, ": ");
+                hora_actual = arr[2];
+
+                # Comparar la hora actual con la hora proporcionada
+                if (hora_actual >= hora_inicio) {
+                    citas_encontradas++;  # Aumentamos el contador de citas encontradas
+                    # Mostrar la cita completa (paciente, especialidad, hora inicial, hora final, día, ID)
+                    print "";
+                    print paciente_line;
+                    print especialidad_line;
+                    print $0;  # Línea con HORA_INICIAL
+                    getline; print $0;  # HORA_FINAL
+                    getline; print $0;  # DIA
+                    getline; print $0;  # ID
+                }
+            }
+
+            END {
+                # Si no se encontraron citas
+                if (citas_encontradas == 0) {
+                    print "No se encontraron citas a partir de la hora inicial " hora_inicio ".";
+                }
+            }
+            ' "$citas"
+
             exit 0  # Finalizamos si no hay más opciones
         fi
     ;;
@@ -233,47 +253,69 @@ while [ "$#" -gt 0 ]; do
         hora_fin="$1"
         shift
 	;;
-	-d)
-		shift
-		comprobarArgumentoVacio "$1"
+    -d)
+        shift
+        comprobarArgumentoVacio "$1"
 
-		# Validar y normalizar la fecha
-		validarFecha "$1"
-		# Comprobar si hubo un error en la validación de la fecha
-		if [ $? -ne 0 ]; then
-			exit 1  # Sale si la fecha es inválida
-		fi
-        # Si la funcion validarFecha tuvo éxito, capturamos la fecha
-        fecha="$1"
-		shift
-
-		# Comprobar si no hay más argumentos y la bandera de -a no está activada
-		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-			echo "Mostramos las citas del dia: $fecha"
-            grep  "$fecha" "$citas" -A 1 -B 5
-			exit 0  # Finalizamos si no hay más opciones
-		fi
-	;;
-	-id)
-		shift
-		comprobarArgumentoVacio "$1"
-
-		id_cita="$1"
+        # Validar y normalizar la fecha
+        validarFecha "$1"
+        # Comprobar si hubo un error en la validación de la fecha
+        if [ $? -ne 0 ]; then
+            exit 1  # Sale si la fecha es inválida
+        fi
         
-		if [ $? -ne 0 ]; then
-			echo "Id introducido incorrectamente"
-			exit 1  # Sale si el id es inválida
-		fi
-		shift
+        shift
+        # Comprobar si no hay más argumentos y la bandera de -a no está activada
+        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+            echo "Buscando citas del día: $fecha"
+            
+            # Contar cuántas coincidencias tiene grep para la fecha
+            citas_encontradas=$(grep -c "$fecha" "$citas")
 
-		# Comprobar si no hay más argumentos y la bandera de -a no está activada
-		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-			echo "Citas a partir del ID: $id_citas"
-		    grep  "$id_cita" "$citas" -B 5
-			exit 0  # Finalizamos si no hay más opciones
-		fi
-	;;
-	# Podemos añadir una especialidad al final para añadir al fichero la especialidad. Puede ser un mensaje
+            if [ "$citas_encontradas" -gt 0 ]; then
+                # Si hay citas, mostramos las citas encontradas
+                echo "Citas encontradas:"
+                grep "$fecha" "$citas" -A 1 -B 5
+            else
+                # Si no hay citas, mostrar el mensaje de error
+                echo "No hay citas disponibles en la fecha: $fecha."
+            fi
+
+            exit 0  # Finalizamos si no hay más opciones
+        fi
+    ;;
+    -id)
+        shift
+        comprobarArgumentoVacio "$1"
+
+        id_cita="$1"
+
+        # Comprobar si el ID fue introducido correctamente
+        if [ $? -ne 0 ]; then
+            echo "ID introducido incorrectamente"
+            exit 1  # Sale si el ID es inválido
+        fi
+        shift
+
+        # Comprobar si no hay más argumentos y la bandera de -a no está activada
+        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
+            echo "Buscando citas a partir del ID: $id_cita"
+
+            # Contar cuántas coincidencias tiene grep para el ID
+            citas_encontradas=$(grep -c "$id_cita" "$citas")
+
+            if [ "$citas_encontradas" -gt 0 ]; then
+                # Si hay citas, mostramos las citas encontradas
+                echo "Citas encontradas:"
+                grep "$id_cita" "$citas" -B 5
+            else
+                # Si no hay citas, mostrar el mensaje de error
+                echo "No hay citas disponibles con el ID: $id_cita."
+            fi
+
+            exit 0  # Finalizamos si no hay más opciones
+        fi
+    ;;
 	*)
         mensajeError
 	;;
@@ -285,6 +327,11 @@ done
 if [[ "$flag_a" == "true" && "$flag_f" == "true" ]]; then
     # Verificar si las variables están rellenadas
     if [[ -n "$nombre" && -n "$hora_inicio" && -n "$hora_fin" && -n "$fecha" ]]; then
+        # Verificar que la hora de inicio sea menor que la hora de fin
+        if [[ $hora_inicio -ge $hora_fin ]]; then
+            echo "Error: La hora de fin ($hora_fin) no puede ser menor que la de inicio ($hora_inicio)."
+            exit 1
+        fi
 
         # Preguntar al usuario la especialidad
         echo "Selecciona el motivo de la consulta (introduce el número correspondiente):"
@@ -306,8 +353,8 @@ if [[ "$flag_a" == "true" && "$flag_f" == "true" ]]; then
         esac
 
         # Buscar las horas de las citas existentes en la misma especialidad y fecha
-        hora_ic=$(grep "ESPECIALIDAD: $especialidad" "$citas" -A 3 | grep "DIA: $fecha_normalizada" -B 2 | grep -oP 'HORA_INICIAL: \K\d+')
-        hora_fc=$(grep "ESPECIALIDAD: $especialidad" "$citas" -A 3 | grep "DIA: $fecha_normalizada" -B 1 | grep -oP 'HORA_FINAL: \K\d+')
+        hora_ic=$(grep "ESPECIALIDAD: $especialidad" "$citas" -A 3 | grep "DIA: $fecha" -B 2 | grep -oP 'HORA_INICIAL: \K\d+')
+        hora_fc=$(grep "ESPECIALIDAD: $especialidad" "$citas" -A 3 | grep "DIA: $fecha" -B 1 | grep -oP 'HORA_FINAL: \K\d+')
 
         # Verificar si hay alguna coincidencia en el rango de horas
         if [[ -n "$hora_ic" && -n "$hora_fc" ]]; then
@@ -319,7 +366,7 @@ if [[ "$flag_a" == "true" && "$flag_f" == "true" ]]; then
 
         # Obtener el último ID del archivo documentos.txt y calcular el nuevo ID
         if [[ -f $citas ]]; then
-            ultimo_id=$(grep "DIA: $fecha_normalizada" -A 1 $citas | grep -oP 'ID: \d+_\K\d+' | tail -n 1)
+            ultimo_id=$(grep "DIA: $fecha" -A 1 $citas | grep -oP 'ID: \d+_\K\d+' | tail -n 1)
             if [[ -z "$ultimo_id" ]]; then
                 nuevo_id=1
             else
