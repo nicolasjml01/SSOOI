@@ -120,7 +120,7 @@ function validarFecha() {
         #validar si un mes tiene 30 o 31 dias
         if !(( $mes_formateado % 2 == 0 )); then  #si el mes es impar
             if (( $dia_formateado == 31 )); then
-                echo "Error: El mes impar no tiene 31 días."   
+                echo "Error: El mes $mes_f no tiene 31 días."   
                 return 1  #sale
             fi
         fi
@@ -216,7 +216,6 @@ while [ "$#" -gt 0 ]; do
         
         # Comprobar si no hay más argumentos y la bandera de -a no está activada
         if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-            echo "Aquí mostraríamos las citas a partir de la hora de inicio: $hora_inicio"
             grep "HORA_INICIAL: $hora_inicio" "$citas" -A 3 -B 2
             exit 0  # Finalizamos si no hay más opciones
         fi
@@ -270,7 +269,7 @@ while [ "$#" -gt 0 ]; do
 
 		# Comprobar si no hay más argumentos y la bandera de -a no está activada
 		if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-			echo "Aquí mostraríamos las citas del id: $id_citas"
+			echo "Citas a partir del ID: $id_citas"
 		    grep  "$id_cita" "$citas" -B 5
 			exit 0  # Finalizamos si no hay más opciones
 		fi
