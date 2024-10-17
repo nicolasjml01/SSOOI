@@ -12,26 +12,26 @@ function mostrarAyuda {
     echo "Opciones:"
     echo "  -f  <Fichero>                    Muestra el contenido del fichero de citas."
     echo "  -a                               Añade una cita al registro de citas."
-	echo "  -n  <Nombre del paciente>        Muestra una cita por el nombre del paciente o añade el nombre a la cita."
+    echo "  -n  <Nombre del paciente>        Muestra una cita por el nombre del paciente o añade el nombre a la cita."
     echo "  -i  <Hora_inicio>                Lista las citas por hora de inicio o añade una cita a partir de cierta hora."
-	echo "  -d  <día_mes_año>                Lista todas las citas de un día específico."
+    echo "  -d  <día_mes_año>                Lista todas las citas de un día específico."
     echo "  -id <identificador>              Muestra una cita según su identificador."
-	echo "	-fi <Hora_Fin>					 Especifica la hora fin de la cita a añadir."
+    echo "  -fi <Hora_Fin>                   Especifica la hora fin de la cita a añadir."
     echo "  -h                               Muestra esta ayuda de uso del programa."
     echo ""
     echo "Ejemplos de uso:"
     echo "Muestra el contenido del archivo de citas:  
-			./citas.sh -f datos.txt"
+            ./citas.sh -f datos.txt"
     echo "Añade una cita con el nombre, hora de inicio, hora de fin y dia:
-			./citas.sh -f datos.txt -a -n Nicolas Marco Tovar Miranda -i 10 -fi 11 -d 15_07_24"
+            ./citas.sh -f datos.txt -a -n Nicolas Marco Tovar Miranda -i 10 -fi 11 -d 15_07_24"
     echo "Lista todas las citas del dia seleccionado:
-			./citas.sh -f datos.txt -d 15_07_24"
+            ./citas.sh -f datos.txt -d 15_07_24"
     echo "Muestra una cita con el ID dado:
-			./citas.sh -f datos.txt -id 15724_1"
+            ./citas.sh -f datos.txt -id 15724_1"
     echo "Muestra una cita del paciente solicitado.  
-			./citas.sh -f datos.txt -n Nicolas Marco Tovar Miranda"
+            ./citas.sh -f datos.txt -n Nicolas Marco Tovar Miranda"
     echo "Muestra todas las citas que comienzan a la hora dada:
-			./citas.sh -f datos.txt -i 10"
+            ./citas.sh -f datos.txt -i 10"
     exit 0
 }
 
@@ -263,7 +263,7 @@ while [ "$#" -gt 0 ]; do
         if [ $? -ne 0 ]; then
             exit 1  # Sale si la fecha es inválida
         fi
-        
+
         shift
         # Comprobar si no hay más argumentos y la bandera de -a no está activada
         if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
