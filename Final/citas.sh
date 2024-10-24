@@ -170,7 +170,7 @@ while [ "$#" -gt 0 ]; do
             
             # Obtener el nombre del archivo
             cita=$(nawk -v nombre="$nombre" '
-            BEGIN { n = 5 }
+            BEGIN { n = 4 }
             $0 ~ "PACIENTE: " nombre {
                 # Imprime la linea buscada
                 print
