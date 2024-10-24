@@ -172,11 +172,12 @@ while [ "$#" -gt 0 ]; do
             cita=$(nawk -v nombre="$nombre" '
             BEGIN { n = 4 }
             $0 ~ "PACIENTE: " nombre {
+                print ""
                 # Imprime la linea buscada
                 print
                 #Imprime las 5 siguientes
                 for (i = 0; i <= n; i++) { getline; print }
-            }
+            } 
             { buf[NR % n] = $0 }' "$citas")
 
             # Verificar si se encontró alguna cita
