@@ -161,12 +161,23 @@ while [ "$#" -gt 0 ]; do
 			shift
 		done
 
+        #formatear variable nombre
+            nombre=$(echo "$nombre" | sed 's/^ *//')
+
         # Comprobacion argumentos y flags
         if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
             echo "Buscando la cita asignada a: $nombre"
             
             # Obtener el nombre del archivo
-            cita=$(grep -m 1 "$nombre" "$citas" -A 5)
+            cita=$(nawk -v nombre="$nombre" '
+            BEGIN { n = 5 }
+            $0 ~ "PACIENTE: " nombre {
+                # Imprime la linea buscada
+                print
+                #Imprime las 5 siguientes
+                for (i = 0; i <= n; i++) { getline; print }
+            }
+            { buf[NR % n] = $0 }' "$citas")
 
             # Verificar si se encontró alguna cita
             if [[ -n "$cita" ]]; then
