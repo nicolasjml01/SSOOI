@@ -166,7 +166,7 @@ while [ "$#" -gt 0 ]; do
 
         # Comprobacion argumentos y flags
         if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-            echo "Buscando la cita asignada a: $nombre"
+            echo "Buscando las citas asignadas a: $nombre"
             
             # Obtener el nombre del archivo
             cita=$(nawk -v nombre="$nombre" '
@@ -184,7 +184,7 @@ while [ "$#" -gt 0 ]; do
             if [[ -n "$cita" ]]; then
                 echo "$cita"
             else
-                echo "No hemos encontrado una cita asignada a ese nombre: $nombre"
+                echo "No hemos encontrado citas asignada a ese nombre: $nombre"
             fi
             exit 0
         fi
