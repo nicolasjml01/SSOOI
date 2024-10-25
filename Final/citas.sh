@@ -119,6 +119,11 @@ fi
 # Variables Globales
 flag_a="false"
 flag_f="false"
+flag_i="false"
+flag_id="false"
+flag_d="false"
+flag_n="false"
+condicion_if="false"
 citas=""
 nombre=""
 hora_inicio=""
@@ -130,6 +135,7 @@ especialidad=""
 # Casos que podemos encontrar
 while [ "$#" -gt 0 ]; do
 	case "$1" in
+    # Que pasa si -f es la ultima opcion? Se imprime si ha habido un -i o algo por delante?
 	-f)
 		flag_f="true"
 		shift
@@ -141,17 +147,13 @@ while [ "$#" -gt 0 ]; do
 			exit 1
 		fi
 		shift
-		if [ -z "$1" ]; then
-			echo "Mostrando el contenido del fichero '$citas':"
-			cat "$citas"
-			exit 0
-		fi
 	;;
 	-a)
 		flag_a="true"
 		shift
 	;;
 	-n)
+        flag_n="true"
 		shift
 		comprobarArgumentoVacio "$1"
 
@@ -162,34 +164,10 @@ while [ "$#" -gt 0 ]; do
 		done
 
         #formatear variable nombre
-            nombre=$(echo "$nombre" | sed 's/^ *//')
-
-        # Comprobacion argumentos y flags
-        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-            echo "Buscando las citas asignadas a: $nombre"
-            
-            # Obtener el nombre del archivo
-            cita=$(nawk -v nombre="$nombre" '
-            BEGIN { n = 4 }
-            $0 ~ "PACIENTE: " nombre {
-                print ""
-                # Imprime la linea buscada
-                print
-                #Imprime las 5 siguientes
-                for (i = 0; i <= n; i++) { getline; print }
-            } 
-            { buf[NR % n] = $0 }' "$citas")
-
-            # Verificar si se encontró alguna cita
-            if [[ -n "$cita" ]]; then
-                echo "$cita"
-            else
-                echo "No hemos encontrado citas asignada a ese nombre: $nombre"
-            fi
-            exit 0
-        fi
+        nombre=$(echo "$nombre" | sed 's/^ *//')
 	;;
 	-i)
+        flag_i="true"
         shift
         comprobarArgumentoVacio "$1"
 
@@ -202,41 +180,6 @@ while [ "$#" -gt 0 ]; do
         # Hora valida
         hora_inicio="$1"
         shift
-        # Comprobacion argumentos y flags
-        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-            echo "Buscando citas con hora inicial mayor o igual a: $hora_inicio"
-            # Busqueda a partir de horas iniciales
-            nawk -v hora_inicio="$hora_inicio" '
-            BEGIN { citas_encontradas = 0 }
-
-            /PACIENTE:/ { paciente_line = $0 }
-            /ESPECIALIDAD:/ { especialidad_line = $0 }
-            /HORA_INICIAL:/ {
-                split($0, arr, ": ");
-                hora_actual = arr[2];
-
-                # Comparar la hora actual con la hora proporcionada
-                if (hora_actual >= hora_inicio) {
-                    citas_encontradas++; 
-                    # Mostramos la cita
-                    print "";
-                    print paciente_line;
-                    print especialidad_line;
-                    print $0;  # Línea con HORA_INICIAL
-                    getline; print $0;  # HORA_FINAL
-                    getline; print $0;  # DIA
-                    getline; print $0;  # ID
-                }
-            }
-            END {
-                # No hay citas encontradas
-                if (citas_encontradas == 0) {
-                    print "No se encontraron citas a partir de la hora inicial " hora_inicio ".";
-                }
-            }
-            ' "$citas"
-            exit 0 
-        fi
     ;;
 	-fi)
 		shift
@@ -253,6 +196,7 @@ while [ "$#" -gt 0 ]; do
         shift
 	;;
     -d)
+        flag_d="true"
         shift
         comprobarArgumentoVacio "$1"
 
@@ -264,36 +208,9 @@ while [ "$#" -gt 0 ]; do
         fi
 
         shift
-        # Comprobacion de argumentos
-        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-            echo "Buscando citas del día: $fecha"
-            
-            # Ver coincidencias con la fecha
-            citas_encontradas=$(grep -c "$fecha" "$citas")
-
-            # Si hay citas
-            if [ "$citas_encontradas" -gt 0 ]; then
-                echo "Citas encontradas:"
-                nawk -v fecha="$fecha" '
-                BEGIN { n = 5 }  
-                $0 ~ "DIA: " fecha {
-                # Imprimimos las lineas de la cita
-                for (i = NR - n; i < NR; i++) if (i >= 0) print buf[i % n]
-                    # Imprimir la línea que coincide con el patrón
-                    print
-                    # Imprime solo 1 línea después de la linea buscada 
-                    getline; print
-                }
-                { buf[NR % n] = $0 }' "$citas"
-
-            else
-                # No hay citas
-                echo "No hay citas disponibles en la fecha: $fecha."
-            fi
-            exit 0
-        fi
     ;;
     -id)
+        flag_id="true"
         shift
         comprobarArgumentoVacio "$1"
         id_cita="$1"
@@ -304,37 +221,138 @@ while [ "$#" -gt 0 ]; do
             exit 1 
         fi
         shift
-
-        # Comprobacion de argumentos y flags
-        if [ "$#" -eq 0 ] && [ "$flag_a" = false ]; then
-            echo "Buscando citas a partir del ID: $id_cita"
-            # Comprobar si hay coincidencias
-            citas_encontradas=$(grep -c "$id_cita" "$citas")
-
-            if [ "$citas_encontradas" -gt 0 ]; then
-                # Si hay citas
-                echo "Citas encontradas:"
-                nawk -v id_cita="$id_cita" '
-                BEGIN { n = 6 } 
-                $0 ~ "ID: " id_cita {
-                for (i = NR - n; i < NR; i++) if (i >= 0) print buf[i % n]
-                    print }
-                { buf[NR % n] = $0 }' "$citas"
-            else
-                # No hay citas
-                echo "No hay citas disponibles con el ID: $id_cita."
-            fi
-            exit 0
-        fi
     ;;
 	*)
         mensajeError
 	;;
 esac
-
 done
 
-# Funcion  que obtiene las horas de un dia
+# Mostrar contenido fichero (-f)
+if [ "$flag_f" == "true" ] && [ "$flag_a" == "false" ] && [ "$flag_n" == "false" ] && [ "$flag_i" == "false" ] && [ "$flag_id" == "false" ] && [ "$flag_d" == "false" ]; then
+    condicion_if=true
+    echo "Mostrando el contenido del fichero '$citas':"
+    cat "$citas"
+    exit 0
+fi
+
+# Mostrar citas por nombre (-n)
+if [ "$flag_f" == "true" ] && [ "$flag_a" == "false" ] && [ "$flag_n" == "true" ] && [ "$flag_i" == "false" ] && [ "$flag_id" == "false" ] && [ "$flag_d" == "false" ]; then
+    condicion_if=true
+    echo "Buscando las citas asignadas a: $nombre"
+
+    # Buscar las citas del paciente en el archivo
+    cita=$(nawk -v nombre="$nombre" '
+    BEGIN { n = 4 }
+    $0 ~ "PACIENTE: " nombre {
+        print ""
+        # Imprime la línea buscada
+        print
+        # Imprime las 5 siguientes líneas
+        for (i = 0; i <= n; i++) { getline; print }
+    } 
+    { buf[NR % n] = $0 }' "$citas")
+
+    # Verificar si se encontró alguna cita
+    if [[ -n "$cita" ]]; then
+        echo "$cita"
+    else
+        echo "No hemos encontrado citas asignadas a ese nombre: $nombre"
+    fi
+    exit 0
+fi
+
+# Mostrar citas por hora inicio (-i)
+if [ "$flag_f" == "true" ] && [ "$flag_a" == "false" ] && [ "$flag_n" == "false" ] && [ "$flag_i" == "true" ] && [ "$flag_id" == "false" ] && [ "$flag_d" == "false" ]; then
+    condicion_if=true
+    echo "Buscando citas con hora inicial mayor o igual a: $hora_inicio"
+    # Busqueda a partir de horas iniciales
+    nawk -v hora_inicio="$hora_inicio" '
+    BEGIN { citas_encontradas = 0 }
+
+    /PACIENTE:/ { paciente_line = $0 }
+    /ESPECIALIDAD:/ { especialidad_line = $0 }
+    /HORA_INICIAL:/ {
+        split($0, arr, ": ");
+        hora_actual = arr[2];
+
+        # Comparar la hora actual con la hora proporcionada
+        if (hora_actual >= hora_inicio) {
+            citas_encontradas++; 
+            # Mostramos la cita
+            print "";
+            print paciente_line;
+            print especialidad_line;
+            print $0;  # Línea con HORA_INICIAL
+            getline; print $0;  # HORA_FINAL
+            getline; print $0;  # DIA
+            getline; print $0;  # ID
+        }
+    }
+    END {
+        # No hay citas encontradas
+        if (citas_encontradas == 0) {
+            print "No se encontraron citas a partir de la hora inicial " hora_inicio ".";
+        }
+    }
+    ' "$citas"
+    exit 0 
+fi
+
+# Mostrar citas del dia (-d)
+if [ "$flag_f" == "true" ] && [ "$flag_a" == "false" ] && [ "$flag_n" == "false" ] && [ "$flag_i" == "false" ] && [ "$flag_id" == "false" ] && [ "$flag_d" == "true" ]; then
+    condicion_if=true
+    echo "Buscando citas del día: $fecha"
+    
+    # Ver coincidencias con la fecha
+    citas_encontradas=$(grep -c "$fecha" "$citas")
+
+    # Si hay citas
+    if [ "$citas_encontradas" -gt 0 ]; then
+        echo "Citas encontradas:"
+        nawk -v fecha="$fecha" '
+        BEGIN { n = 5 }  
+        $0 ~ "DIA: " fecha {
+        # Imprimimos las lineas de la cita
+        for (i = NR - n; i < NR; i++) if (i >= 0) print buf[i % n]
+            # Imprimir la línea que coincide con el patrón
+            print
+            # Imprime solo 1 línea después de la linea buscada 
+            getline; print
+        }
+        { buf[NR % n] = $0 }' "$citas"
+
+    else
+        # No hay citas
+        echo "No hay citas disponibles en la fecha: $fecha."
+    fi
+    exit 0
+fi
+
+# Mostrar cita por id (-id)
+if [ "$flag_f" == "true" ] && [ "$flag_a" == "false" ] && [ "$flag_n" == "false" ] && [ "$flag_i" == "false" ] && [ "$flag_id" == "true" ] && [ "$flag_d" == "false" ]; then
+    condicion_if=true
+    echo "Buscando citas a partir del ID: $id_cita"
+    # Comprobar si hay coincidencias
+    citas_encontradas=$(grep -c "$id_cita" "$citas")
+
+    if [ "$citas_encontradas" -gt 0 ]; then
+        # Si hay citas
+        echo "Citas encontradas:"
+        nawk -v id_cita="$id_cita" '
+        BEGIN { n = 6 } 
+        $0 ~ "ID: " id_cita {
+        for (i = NR - n; i < NR; i++) if (i >= 0) print buf[i % n]
+            print }
+        { buf[NR % n] = $0 }' "$citas"
+    else
+        # No hay citas
+        echo "No hay citas disponibles con el ID: $id_cita."
+    fi
+    exit 0
+fi
+
+# Funcion  que obtiene las horas de un dia y especialidad
 function obtener_hora() {
     local tipo_hora=$1
     nawk -v especialidad="$especialidad" '
@@ -355,8 +373,9 @@ function obtener_hora() {
         { buf[NR % n] = $0 }' | grep "$tipo_hora:" | cut -d ':' -f 2 | tr -d ' '
 }
 
-# Verificar argumentos para introducir en fichero
+# Introducir datos en el fichero
 if [[ "$flag_a" == "true" && "$flag_f" == "true" && -n "$nombre" && -n "$hora_inicio" && -n "$hora_fin" && -n "$fecha" ]]; then
+    condicion_if=true
     # Verificacion entre hora_inicio y hora_fin
     if [[ $hora_inicio -ge $hora_fin ]]; then
         echo "Error: La hora de fin ($hora_fin) no puede ser menor que la de inicio ($hora_inicio)."
@@ -427,8 +446,9 @@ ID: $id"
     fi
     echo ""
     echo "Cita añadida correctamente a $citas."
-else
-    echo "Error: Las variables nombre, hora_inicio, hora_fin o fecha no están inicializadas"
-    echo "       O los flags flag_a o flag_f no están activados."
-    exit 1
+fi
+
+# Condicion de que no entre en los if
+if [ "$condicion_if" == "false" ]; then
+    mensajeError
 fi
