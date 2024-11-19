@@ -512,84 +512,88 @@ int main()
 // MANEJADORES DE SIGTERM
 void sigusrHandler1(int sig)
 {
+    
     if (sig == SIGTERM){ 
-
-        if (getpid() == pids.pid38)
+        if (getpid() == pids.pid58)
         {
-            puts("terminando proceso 38...");
-            kill(pids.pid39, SIGTERM);
+            puts("Terminando proceso 58...");
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid39)
+                if (getpid() == pids.pid57)
         {
-            puts("Terminando proceso 39...");
-            kill(pids.pid41, SIGTERM);
-            kill(pids.pid40,SIGTERM);
+            puts("Terminando proceso 57...");
+            kill(pids.pid58, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid40)
+        if (getpid() == pids.pid56)
         {
-            puts("Terminando proceso 40...");
-            kill(pids.pid42, SIGTERM);
-            kill(pids.pid43, SIGTERM);
+            puts("Terminando proceso 56...");
+            kill(pids.pid52, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid42)
+        if (getpid() == pids.pid55)
         {
-            puts("Terminando proceso 42...");
-            kill(pids.pid46, SIGTERM);
+            puts("Terminando proceso 55...");
+            kill(pids.pid56, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid46)
+        if (getpid() == pids.pid53)
         {
-            puts("Terminando proceso 46...");
-            kill(pids.pid50, SIGTERM);
+            puts("Terminando proceso 53...");
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid50)
+        if (getpid() == pids.pid49)
         {
-            puts("Terminando proceso 50...");
+            puts("Terminando proceso 49...");
+            kill(pids.pid52, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid43)
+        if (getpid() == pids.pid45)
         {
-            puts("Terminando proceso 43...");
-            kill(pids.pid47, SIGTERM);
+            puts("Terminando proceso 45...");
+            kill(pids.pid49, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid47)
+        if (getpid() == pids.pid52)
         {
-            puts("Terminando proceso 47...");
-            kill(pids.pid51, SIGTERM);
+            puts("Terminando proceso 52...");
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid51)
+        if (getpid() == pids.pid48)
         {
-            puts("Terminando proceso 51...");
-            kill(pids.pid54, SIGTERM);
+            puts("Terminando proceso 48...");
+            kill(pids.pid52, SIGTERM);
+            sleep(1);
+            exit(0);
+
+        }if (getpid() == pids.pid44)
+        {
+            puts("Terminando proceso 44...");
+            kill(pids.pid48, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid54)
+        if (getpid() == pids.pid44)
         {
-            puts("Terminando proceso 54...");
+            puts("Terminando proceso 44...");
+            kill(pids.pid48, SIGTERM);
             sleep(1);
             exit(0);
 
@@ -603,83 +607,89 @@ void sigusrHandler1(int sig)
             exit(0);
 
         }
-        if (getpid() == pids.pid44)
+        if (getpid() == pids.pid54)
         {
-            puts("Terminando proceso 44...");
-            kill(pids.pid48, SIGTERM);
+            puts("Terminando proceso 54...");
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid48)
+        if (getpid() == pids.pid51)
         {
-            puts("Terminando proceso 48...");
-            kill(pids.pid52, SIGTERM);
+            puts("Terminando proceso 51...");
+            kill(pids.pid54, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid52)
+         if (getpid() == pids.pid47)
         {
-            puts("Terminando proceso 52...");
+            puts("Terminando proceso 47...");
+            kill(pids.pid51, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid45)
+        if (getpid() == pids.pid43)
         {
-            puts("Terminando proceso 45...");
-            kill(pids.pid49, SIGTERM);
+            puts("Terminando proceso 43...");
+            kill(pids.pid47, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid49)
+        if (getpid() == pids.pid50)
         {
-            puts("Terminando proceso 49...");
-            kill(pids.pid52, SIGTERM);
+            puts("Terminando proceso 50...");
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid53)
+        if (getpid() == pids.pid46)
         {
-            puts("Terminando proceso 53...");
+            puts("Terminando proceso 46...");
+            kill(pids.pid50, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid55)
+        if (getpid() == pids.pid42)
         {
-            puts("Terminando proceso 55...");
-            kill(pids.pid56, SIGTERM);
+            puts("Terminando proceso 42...");
+            kill(pids.pid46, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid56)
+        if (getpid() == pids.pid40)
         {
-            puts("Terminando proceso 56...");
-            kill(pids.pid52, SIGTERM);
+            puts("Terminando proceso 40...");
+            kill(pids.pid42, SIGTERM);
+            kill(pids.pid43, SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid57)
+        if (getpid() == pids.pid39)
         {
-            puts("Terminando proceso 57...");
-            kill(pids.pid58, SIGTERM);
+            puts("Terminando proceso 39...");
+            kill(pids.pid41, SIGTERM);
+            kill(pids.pid40,SIGTERM);
             sleep(1);
             exit(0);
 
         }
-        if (getpid() == pids.pid58)
+        if (getpid() == pids.pid38)
         {
-            puts("Terminando proceso 58...");
+            puts("terminando proceso 38...");
+            kill(pids.pid39, SIGTERM);
             sleep(1);
             exit(0);
 
         }
+        
+        
+
     }
     else
     {
@@ -693,7 +703,7 @@ void sigusrHandler2(int sig)
      if (sig == SIGUSR2 && getpid() == pids.pid37)
     {
         puts("Terminando proceso 37...");
-        kill(pids.pid58, SIGTERM);
+        kill(pids.pid38, SIGTERM);
         exit(0);
 
 
