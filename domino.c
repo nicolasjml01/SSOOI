@@ -103,49 +103,35 @@ int main() {
             pids.pid39 = fork();  // Creacion de 39
             pids.pid38 = getpid();
             switch (pids.pid39) {
-                case -1:
-                    perror("Error en el fork 39");
-                    exit(-1);
+                case -1: perror("Error en el fork 39"); exit(-1);
                 case 0:
                     printf("|_39: %d\n", getpid());
                     pids.pid40 = fork();  // Creacion de 40
                     pids.pid39 = getpid();
                     switch (pids.pid40) {
-                        case -1:
-                            perror("Error en el fork 40");
-                            exit(-1);
+                        case -1: perror("Error en el fork 40"); exit(-1);
                         case 0:
                             printf("|_40 %d\n", getpid());
                             pids.pid42 = fork();  // Creacion de 42
                             pids.pid40 = getpid();
                             switch (pids.pid42) {
-                                case -1:
-                                    perror("Error en el fork 42");
-                                    exit(-1);
+                                case -1: perror("Error en el fork 42"); exit(-1);
                                 case 0:
                                     printf("|_42: %d\n", getpid());
                                     pids.pid46 = fork();  // Creacion de 46
                                     pids.pid42 = getpid();
                                     switch (pids.pid46) {
-                                        case -1:
-                                            perror("Error en el fork 46");
-                                            exit(-1);
+                                        case -1: perror("Error en el fork 46"); exit(-1);
                                         case 0:
                                             printf("|_46: %d\n", getpid());
-                                            pids.pid50 =
-                                                fork();  // Creacion de 50
+                                            pids.pid50 = fork();  // Creacion de 50
                                             pids.pid46 = getpid();
                                             switch (pids.pid50) {
-                                                case -1:
-                                                    perror(
-                                                        "Error en el fork 50");
-                                                    exit(-1);
+                                                case -1: perror("Error en el fork 50"); exit(-1);
                                                 case 0:
-                                                    printf("|_50: %d\n",
-                                                           getpid());
-                                                    pids.pid54 =
-                                                        fork();  // Creacion de
-                                                                 // 54
+                                                    printf("|_50: %d\n", getpid());
+                                                    pids.pid54 = fork();  // Creacion de
+                                                                          // 54
                                                     pids.pid50 = getpid();
                                                     switch (pids.pid54) {
                                                         case -1:
@@ -154,115 +140,60 @@ int main() {
                                                                 "fork 54");
                                                             exit(-1);
                                                         case 0:
-                                                            printf("|_54: %d\n",
-                                                                   getpid());
-                                                            pids.pid56 =
-                                                                fork();  // Creacion
-                                                                         // de
-                                                                         // 56
-                                                            pids.pid54 =
-                                                                getpid();
-                                                            switch (
-                                                                pids.pid56) {
-                                                                case -1:
-                                                                    perror(
-                                                                        "Error "
-                                                                        "en el "
-                                                                        "fork "
-                                                                        "56");
-                                                                    exit(-1);
+                                                            printf("|_54: %d\n", getpid());
+                                                            pids.pid56 = fork();  // Creacion
+                                                                                  // de
+                                                                                  // 56
+                                                            pids.pid54 = getpid();
+                                                            switch (pids.pid56) {
+                                                                case -1: perror("Error en el fork 56"); exit(-1);
                                                                 case 0:
                                                                     printf(
                                                                         "|_56: "
                                                                         "%d\n",
                                                                         getpid());
-                                                                    pids.pid57 =
-                                                                        fork();  // creacion de 57
-                                                                    pids.pid56 =
-                                                                        getpid();
-                                                                    switch (
-                                                                        pids.pid57) {
-                                                                        case -1:
-                                                                            perror(
-                                                                                "Error en el fork 57");
-                                                                            exit(
-                                                                                -1);
+                                                                    pids.pid57 = fork();  // creacion de 57
+                                                                    pids.pid56 = getpid();
+                                                                    switch (pids.pid57) {
+                                                                        case -1: perror("Error en el fork 57"); exit(-1);
                                                                         case 0:
-                                                                            printf(
-                                                                                "|_57: %d\n",
-                                                                                getpid());
-                                                                            pids.pid58 =
-                                                                                fork();  // creacion de 58
-                                                                            pids.pid57 =
-                                                                                getpid();
-                                                                            switch (
-                                                                                pids.pid58) {
-                                                                                case -1:
-                                                                                    perror(
-                                                                                        "Error en el fork 58");
-                                                                                    exit(
-                                                                                        -1);
+                                                                            printf("|_57: %d\n", getpid());
+                                                                            pids.pid58 = fork();  // creacion de 58
+                                                                            pids.pid57 = getpid();
+                                                                            switch (pids.pid58) {
+                                                                                case -1: perror("Error en el fork 58"); exit(-1);
                                                                                 case 0:
-                                                                                    printf(
-                                                                                        "|_58: %d\n",
-                                                                                        getpid());
-                                                                                    pids.pid58 =
-                                                                                        getpid();
+                                                                                    printf("|_58: %d\n", getpid());
+                                                                                    pids.pid58 = getpid();
 
-                                                                                    kill(
-                                                                                        pids.pid37,
-                                                                                        SIGUSR2);
-                                                                                    sigsuspend(
-                                                                                        &maskusr1);
+                                                                                    kill(pids.pid37, SIGUSR2);
+                                                                                    sigsuspend(&maskusr1);
 
-                                                                                default:
-
-                                                                                    sigsuspend(
-                                                                                        &maskusr1);
+                                                                                default: sigsuspend(&maskusr1);
                                                                             }
-                                                                        default:
-
-                                                                            sigsuspend(
-                                                                                &maskusr1);
-
-                                                                            break;
+                                                                        default: sigsuspend(&maskusr1); break;
                                                                     }
-                                                                default:
-
-                                                                    sigsuspend(
-                                                                        &maskusr1);
+                                                                default: sigsuspend(&maskusr1);
                                                             }
-                                                        default:
-
-                                                            sigsuspend(
-                                                                &maskusr1);
+                                                        default: sigsuspend(&maskusr1);
                                                     }
-                                                default:
-
-                                                    sigsuspend(&maskusr1);
+                                                default: sigsuspend(&maskusr1);
                                             }
-                                        default:
-
-                                            sigsuspend(&maskusr1);
+                                        default: sigsuspend(&maskusr1);
                                     }
                                 default:
                                     pids.pid43 = fork();
                                     switch (pids.pid43) {
-                                        case -1:
-                                            perror("Error en el fork 43");
-                                            exit(-1);
+                                        case -1: perror("Error en el fork 43"); exit(-1);
                                         case 0:
                                             printf("|_43: %d\n", getpid());
                                             pids.pid47 = fork();
                                             pids.pid43 = getpid();
                                             switch (pids.pid47) {
-                                                case -1:
-                                                    perror("Error en fork 47");
-                                                    exit(-1);
+                                                case -1: perror("Error en fork 47"); exit(-1);
 
                                                 case 0:
-                                                    printf("|_47: %d\n",
-                                                           getpid());
+                                                    printf("|_47: %d\n", getpid());
                                                     pids.pid51 = fork();
                                                     pids.pid47 = getpid();
                                                     switch (pids.pid51) {
@@ -272,59 +203,40 @@ int main() {
                                                                 "fork 51");
                                                             exit(-1);
                                                         case 0:
-                                                            printf("|_51: %d\n",
-                                                                   getpid());
-                                                            pids.pid51 =
-                                                                getpid();
+                                                            printf("|_51: %d\n", getpid());
+                                                            pids.pid51 = getpid();
 
-                                                            sigsuspend(
-                                                                &maskusr1);
+                                                            sigsuspend(&maskusr1);
 
                                                             break;
 
-                                                        default:
-
-                                                            sigsuspend(
-                                                                &maskusr1);
+                                                        default: sigsuspend(&maskusr1);
                                                     }
 
-                                                default:
-
-                                                    sigsuspend(&maskusr1);
-
-                                                    break;
+                                                default: sigsuspend(&maskusr1); break;
                                             }
-                                        default:
-
-                                            sigsuspend(&maskusr1);
+                                        default: sigsuspend(&maskusr1);
                                     }
                             }
                         default:
                             pids.pid41 = fork();
                             switch (pids.pid41) {
-                                case -1:
-                                    perror("Error en el fork 41");
-                                    exit(-1);
+                                case -1: perror("Error en el fork 41"); exit(-1);
                                 case 0:
                                     printf("|_41: %d\n", getpid());
                                     pids.pid44 = fork();
                                     pids.pid41 = getpid();
                                     switch (pids.pid44) {
-                                        case -1:
-                                            perror("Error en el fork 44");
-                                            exit(-1);
+                                        case -1: perror("Error en el fork 44"); exit(-1);
                                         case 0:
                                             printf("|_44 %d\n", getpid());
                                             pids.pid48 = fork();
                                             pids.pid44 = getpid();
                                             switch (pids.pid48) {
-                                                case -1:
-                                                    perror("Error en fork 48");
-                                                    exit(-1);
+                                                case -1: perror("Error en fork 48"); exit(-1);
 
                                                 case 0:
-                                                    printf("|_48: %d\n",
-                                                           getpid());
+                                                    printf("|_48: %d\n", getpid());
                                                     pids.pid52 = fork();
                                                     pids.pid48 = getpid();
                                                     switch (pids.pid52) {
@@ -334,13 +246,10 @@ int main() {
                                                                 "fork 52");
                                                             exit(-1);
                                                         case 0:
-                                                            printf("|_52: %d\n",
-                                                                   getpid());
+                                                            printf("|_52: %d\n", getpid());
                                                             pids.pid55 = fork();
-                                                            pids.pid52 =
-                                                                getpid();
-                                                            switch (
-                                                                pids.pid55) {
+                                                            pids.pid52 = getpid();
+                                                            switch (pids.pid55) {
                                                                 case -1:
                                                                     perror(
                                                                         "Error "
@@ -353,30 +262,20 @@ int main() {
                                                                         "|_55: "
                                                                         "%d\n",
                                                                         getpid());
-                                                                    pids.pid55 =
-                                                                        getpid();
+                                                                    pids.pid55 = getpid();
 
-                                                                    sigsuspend(
-                                                                        &maskusr1);
+                                                                    sigsuspend(&maskusr1);
 
                                                                     break;
 
-                                                                default:
-
-                                                                    sigsuspend(
-                                                                        &maskusr1);
+                                                                default: sigsuspend(&maskusr1);
                                                             }
                                                             break;
 
-                                                        default:
-
-                                                            sigsuspend(
-                                                                &maskusr1);
+                                                        default: sigsuspend(&maskusr1);
                                                     }
 
-                                                default:
-
-                                                    sigsuspend(&maskusr1);
+                                                default: sigsuspend(&maskusr1);
                                             }
 
                                             break;
@@ -384,13 +283,9 @@ int main() {
                                         default:
                                             pids.pid45 = fork();
                                             switch (pids.pid45) {
-                                                case -1:
-                                                    perror(
-                                                        "Error en el fork 45");
-                                                    exit(-1);
+                                                case -1: perror("Error en el fork 45"); exit(-1);
                                                 case 0:
-                                                    printf("|_45: %d\n",
-                                                           getpid());
+                                                    printf("|_45: %d\n", getpid());
                                                     pids.pid49 = fork();
                                                     pids.pid45 = getpid();
                                                     switch (pids.pid49) {
@@ -401,13 +296,10 @@ int main() {
                                                             exit(-1);
 
                                                         case 0:
-                                                            printf("|_49: %d\n",
-                                                                   getpid());
+                                                            printf("|_49: %d\n", getpid());
                                                             pids.pid53 = fork();
-                                                            pids.pid49 =
-                                                                getpid();
-                                                            switch (
-                                                                pids.pid53) {
+                                                            pids.pid49 = getpid();
+                                                            switch (pids.pid53) {
                                                                 case -1:
                                                                     perror(
                                                                         "Error "
@@ -420,47 +312,31 @@ int main() {
                                                                         "|_53: "
                                                                         "%d\n",
                                                                         getpid());
-                                                                    pids.pid53 =
-                                                                        getpid();
+                                                                    pids.pid53 = getpid();
 
-                                                                    sigsuspend(
-                                                                        &maskusr1);
+                                                                    sigsuspend(&maskusr1);
 
                                                                     break;
 
-                                                                default:
-
-                                                                    sigsuspend(
-                                                                        &maskusr1);
+                                                                default: sigsuspend(&maskusr1);
                                                             }
 
-                                                        default:
-
-                                                            sigsuspend(
-                                                                &maskusr1);
+                                                        default: sigsuspend(&maskusr1);
                                                     }
-                                                default:
-
-                                                    sigsuspend(&maskusr1);
+                                                default: sigsuspend(&maskusr1);
                                             }
                                             break;
                                     }
 
-                                default:
-
-                                    sigsuspend(&maskusr1);
+                                default: sigsuspend(&maskusr1);
                             }
                     }
-                default:
-
-                    sigsuspend(&maskusr1);
+                default: sigsuspend(&maskusr1);
             }
 
             sigsuspend(&maskusr1);
 
-        default:
-
-            sigsuspend(&maskusr2);
+        default: sigsuspend(&maskusr2);
     }
 }
 
