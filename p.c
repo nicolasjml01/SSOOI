@@ -209,41 +209,52 @@ int main() {
                                                                                     pids.pid58 =
                                                                                         getpid();
 
-                                                                                    kill(
-                                                                                        pids.pid37,
-                                                                                        SIGUSR2);
                                                                                     sigsuspend(
                                                                                         &maskusr1);
+                                                                                    exit(
+                                                                                        0);
 
                                                                                 default:
 
                                                                                     sigsuspend(
                                                                                         &maskusr1);
+                                                                                    kill(
+                                                                                        pids.pid58,
+                                                                                        SIGTERM);  // Matar al proceso 38
                                                                             }
                                                                         default:
 
                                                                             sigsuspend(
-                                                                                &maskusr1);
-
-                                                                            break;
+                                                                                &maskusr1);  // Proceso 56
+                                                                            kill(
+                                                                                pids.pid57,
+                                                                                SIGTERM);
                                                                     }
                                                                 default:
 
                                                                     sigsuspend(
-                                                                        &maskusr1);
+                                                                        &maskusr1);  // Proceso 54 no mata a nadie
                                                             }
+
                                                         default:
 
                                                             sigsuspend(
                                                                 &maskusr1);
+                                                            // Proceso 50 no
+                                                            // mata a nadie
                                                     }
                                                 default:
 
                                                     sigsuspend(&maskusr1);
+                                                    kill(
+                                                        pids.pid50,
+                                                        SIGTERM);  // Proceso 46
                                             }
                                         default:
 
                                             sigsuspend(&maskusr1);
+                                            kill(pids.pid46,
+                                                 SIGTERM);  // Proceso 42
                                     }
                                 default:
                                     pids.pid43 = fork();
@@ -279,6 +290,12 @@ int main() {
 
                                                             sigsuspend(
                                                                 &maskusr1);
+                                                            kill(
+                                                                pids.pid39,
+                                                                SIGTERM);  // Matar
+                                                                           // al
+                                                                           // proceso
+                                                                           // 38
 
                                                             break;
 
@@ -286,18 +303,32 @@ int main() {
 
                                                             sigsuspend(
                                                                 &maskusr1);
+                                                            kill(
+                                                                pids.pid39,
+                                                                SIGTERM);  // Matar
+                                                                           // al
+                                                                           // proceso
+                                                                           // 38
                                                     }
 
                                                 default:
 
                                                     sigsuspend(&maskusr1);
+                                                    kill(
+                                                        pids.pid39,
+                                                        SIGTERM);  // Matar al
+                                                                   // proceso 38
 
                                                     break;
                                             }
                                         default:
 
                                             sigsuspend(&maskusr1);
+                                            kill(pids.pid43,
+                                                 SIGTERM);  // Matar al proceso
+                                                            // 38
                                     }
+                                    // Proceso 40 de 42
                             }
                         default:
                             pids.pid41 = fork();
@@ -358,6 +389,9 @@ int main() {
 
                                                                     sigsuspend(
                                                                         &maskusr1);
+                                                                    kill(
+                                                                        pids.pid39,
+                                                                        SIGTERM);  // Matar al proceso 38
 
                                                                     break;
 
@@ -365,6 +399,9 @@ int main() {
 
                                                                     sigsuspend(
                                                                         &maskusr1);
+                                                                    kill(
+                                                                        pids.pid39,
+                                                                        SIGTERM);  // Matar al proceso 38
                                                             }
                                                             break;
 
@@ -372,11 +409,21 @@ int main() {
 
                                                             sigsuspend(
                                                                 &maskusr1);
+                                                            kill(
+                                                                pids.pid39,
+                                                                SIGTERM);  // Matar
+                                                                           // al
+                                                                           // proceso
+                                                                           // 38
                                                     }
 
                                                 default:
 
                                                     sigsuspend(&maskusr1);
+                                                    kill(
+                                                        pids.pid39,
+                                                        SIGTERM);  // Matar al
+                                                                   // proceso 38
                                             }
 
                                             break;
@@ -422,9 +469,18 @@ int main() {
                                                                         getpid());
                                                                     pids.pid53 =
                                                                         getpid();
+                                                                    kill(
+                                                                        pids.pid37,
+                                                                        SIGUSR2);
 
                                                                     sigsuspend(
                                                                         &maskusr1);
+                                                                    // kill(pids.pid39,
+                                                                    // SIGTERM);
+                                                                    // // Matar
+                                                                    // al
+                                                                    // proceso
+                                                                    // 38
 
                                                                     break;
 
@@ -432,16 +488,30 @@ int main() {
 
                                                                     sigsuspend(
                                                                         &maskusr1);
+                                                                    //      kill(pids.pid39,
+                                                                    //      SIGTERM);
+                                                                    //      //
+                                                                    //      Matar
+                                                                    //      al
+                                                                    //      proceso
+                                                                    //      38
                                                             }
 
                                                         default:
 
                                                             sigsuspend(
                                                                 &maskusr1);
+                                                            kill(
+                                                                pids.pid49,
+                                                                SIGTERM);  // Proceso
+                                                                           // 45
                                                     }
                                                 default:
 
                                                     sigsuspend(&maskusr1);
+                                                    kill(
+                                                        pids.pid45,
+                                                        SIGTERM);  // Proceso 41
                                             }
                                             break;
                                     }
@@ -449,142 +519,30 @@ int main() {
                                 default:
 
                                     sigsuspend(&maskusr1);
+                                    kill(pids.pid41,
+                                         SIGTERM);  // Matar al proceso 38
                             }
                     }
                 default:
 
                     sigsuspend(&maskusr1);
+                    kill(pids.pid40, SIGTERM);  // Matar al proceso 40
             }
 
             sigsuspend(&maskusr1);
+            kill(pids.pid39, SIGTERM);  // Matar al proceso 39
 
         default:
 
-            sigsuspend(&maskusr2);
+            sigsuspend(&maskusr1);
+            kill(pids.pid38, SIGTERM);  // Matar al proceso 38
     }
+
+    return 0;
 }
 
 // MANEJADORES DE SIGTERM
-void sigusrHandler1(int sig) {
-    if (sig == SIGTERM) {
-        if (getpid() == pids.pid58) {
-            puts("Terminando proceso 58...");
-            exit(0);
-        }
-        if (getpid() == pids.pid57) {
-            puts("Terminando proceso 57...");
-            kill(pids.pid58, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid56) {
-            puts("Terminando proceso 56...");
-            kill(pids.pid57, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid55) {
-            puts("Terminando proceso 55...");
-            kill(pids.pid56, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid53) {
-            puts("Terminando proceso 53...");
-            kill(pids.pid55, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid49) {
-            puts("Terminando proceso 49...");
-            kill(pids.pid53, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid45) {
-            puts("Terminando proceso 45...");
-            kill(pids.pid49, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid52) {
-            puts("Terminando proceso 52...");
-            exit(0);
-        }
-        if (getpid() == pids.pid48) {
-            puts("Terminando proceso 48...");
-            kill(pids.pid52, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid44) {
-            puts("Terminando proceso 44...");
-            kill(pids.pid48, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid41) {
-            puts("Terminando proceso 41...");
-            kill(pids.pid44, SIGTERM);
-            kill(pids.pid45, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid54) {
-            puts("Terminando proceso 54...");
-            exit(0);
-        }
-        if (getpid() == pids.pid51) {
-            puts("Terminando proceso 51...");
-            kill(pids.pid54, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid47) {
-            puts("Terminando proceso 47...");
-            kill(pids.pid51, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid43) {
-            puts("Terminando proceso 43...");
-            kill(pids.pid47, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid50) {
-            puts("Terminando proceso 50...");
-            exit(0);
-        }
-        if (getpid() == pids.pid46) {
-            puts("Terminando proceso 46...");
-            kill(pids.pid50, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid42) {
-            puts("Terminando proceso 42...");
-            kill(pids.pid46, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid40) {
-            puts("Terminando proceso 40...");
-            kill(pids.pid42, SIGTERM);
-            kill(pids.pid43, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid39) {
-            puts("Terminando proceso 39...");
-            kill(pids.pid40, SIGTERM);
-            kill(pids.pid41, SIGTERM);
-            exit(0);
-        }
-        if (getpid() == pids.pid38) {
-            puts("terminando proceso 38...");
-            kill(pids.pid39, SIGTERM);
-            exit(0);
-        }
-
-    } else {
-        puts("ERROR EN SIGTERM");
-    }
-}
+void sigusrHandler1(int sig) { printf("Terminando proceso %d...\n", getpid()); }
 
 // MANEJADORES DE SIGUSR2 (MATAR A N2 Y N3)
-void sigusrHandler2(int sig) {
-    if (sig == SIGUSR2 && getpid() == pids.pid37) {
-        puts("Terminando proceso 37...");
-        kill(pids.pid38, SIGTERM);
-        exit(0);
-
-    } else {
-        puts("ERROR EN SIGTERM");
-    }
-}
+void sigusrHandler2(int sig) { puts("Terminando proceso..."); }

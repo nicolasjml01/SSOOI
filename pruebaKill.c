@@ -154,11 +154,7 @@ int main()
 // MANEJADORES DE SIGTERM
 void sigusrHandler1(int sig)
 {
-                printf("Terminando proceso %d...\n", getpid());
-
-    
-        
-       
+    printf("Terminando proceso %d...\n", getpid());     
 }
 
 
