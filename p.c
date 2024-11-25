@@ -137,9 +137,11 @@ int main() {
                                                 case -1: perror("Error en el fork 50"); exit(-1);
                                                 case 0:
                                                     printf("|_50: %d\n", getpid());
-                                                    pids.pid54 = fork();  // Creacion de
-                                                    // 54
+                                                    pids.pid54 = fork();
                                                     pids.pid50 = getpid();
+                                                    sigsuspend(&maskusr1);
+                                                    exit(0);
+
                                                     switch (pids.pid54) {
                                                         case -1:
                                                             perror(
@@ -148,10 +150,11 @@ int main() {
                                                             exit(-1);
                                                         case 0:
                                                             printf("|_54: %d\n", getpid());
-                                                            pids.pid56 = fork();  // Creacion
-                                                            // de
-                                                            // 56
+                                                            pids.pid56 = fork();
                                                             pids.pid54 = getpid();
+                                                            sigsuspend(&maskusr1);
+                                                            exit(0);
+
                                                             switch (pids.pid56) {
                                                                 case -1:
                                                                     perror(
@@ -180,6 +183,7 @@ int main() {
                                                                                     pids.pid58 = getpid();
 
                                                                                     sigsuspend(&maskusr1);
+                                                                                    exit(0);
                                                                                     
 
                                                                                 default: 
@@ -277,21 +281,17 @@ int main() {
                                                     pids.pid48 = getpid();
                                                     switch (pids.pid52) {
                                                         case -1:
-                                                            perror(
-                                                                "Error en el "
-                                                                "fork 52");
+                                                            perror("Error en el fork 52");
                                                             exit(-1);
                                                         case 0:
                                                             printf("|_52: %d\n", getpid());
                                                             pids.pid55 = fork();
                                                             pids.pid52 = getpid();
+                                                            sigsuspend(&maskusr1);
+                                                            exit(0);
                                                             switch (pids.pid55) {
                                                                 case -1:
-                                                                    perror(
-                                                                        "Error "
-                                                                        "en el "
-                                                                        "fork "
-                                                                        "55");
+                                                                    perror("Error en el dork 55");
                                                                     exit(-1);
                                                                 case 0:
                                                                     printf(
@@ -370,17 +370,17 @@ int main() {
 
                                                         default: sigsuspend(&maskusr1); kill(pids.pid49, SIGTERM);
                                                     }
-                                                default: sigsuspend(&maskusr1); kill(pids.pid45, SIGTERM);
-                                            }
-                                            sigsuspend(&maskusr1);
-                                            kill(pids.pid44, SIGTERM);
+                                                default: 
+                                                    sigsuspend(&maskusr1); 
+                                                    kill(pids.pid45, SIGTERM);
+                                                    kill(pids.pid44, SIGTERM);
+                                            }                                            
                                     }
                                 default: 
                                     sigsuspend(&maskusr1); 
                                     kill(pids.pid41, SIGTERM);  // Matar proceso 41 del padre 39
+                                    kill(pids.pid40, SIGTERM);
                             }
-                            sigsuspend(&maskusr1);
-                            kill(pids.pid40, SIGTERM);
                     }
                 default: 
                     sigsuspend(&maskusr1); 
