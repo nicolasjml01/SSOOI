@@ -188,63 +188,49 @@ int main()
                                                                             printf("|_58: %d\n", getpid());
                                                                             pids.pid58 = getpid();
                                                                         
-                                                                            kill(pids.pid37, SIGUSR2);
-
-                                                                            while (1)
-                                                                            {
+                                                                            
                                                                                 sigsuspend(&maskusr1);
-                                                                            }
-                                                                        break;
+                                                                            
                                                                         
                                                                         default:
-                                                                            while (1)
-                                                                            {   
+                                                                            
                                                                                 sigsuspend(&maskusr1);
                                                                                 
-                                                                            }
-                                                                        break;
+                                                                            
 
 
                                                                     }
                                                                 default:
-                                                                    while (1)
-                                                                    {   
+                                                                     
                                                                         sigsuspend(&maskusr1);
                                                                         
-                                                                    }
+                                                                    
                                                                 break;
                                                                 }
                                                             default:
-                                                                while (1)
-                                                                {   
+                                                                
                                                                     sigsuspend(&maskusr1);
                                                                     
-                                                                }
-                                                            break;
+                                                                
                                                         }
                                                     default:
-                                                        while (1)
-                                                        {   
+                                                         
                                                             sigsuspend(&maskusr1);
                                                             
-                                                        }
-                                                    break;
+                                                        
                                                     }
                                             default:
-                                                while (1)
-                                                {   
+                                                
                                                     sigsuspend(&maskusr1);
                                                     
-                                                }
-                                            break;
-                                            }
-                                        default:
-                                            while (1)
-                                            {   
-                                                sigsuspend(&maskusr1);
                                                 
                                             }
-                                            break;
+                                        default:
+                                            
+                                                sigsuspend(&maskusr1);
+                                                
+                                            
+                                            
                                     }
                                 default:
                                     pids.pid43 = fork();
@@ -275,42 +261,35 @@ int main()
                                                         case 0:
                                                             printf("|_51: %d\n", getpid());
                                                             pids.pid51 = getpid();
-                                                            while (1)
-                                                            {   
+                                                               
                                                                 sigsuspend(&maskusr1);
                                                                 
-                                                            }
+                                                            
                                                         break;
 
                                                         default:
-                                                            while (1)
-                                                            {   
+                                                           
                                                                 sigsuspend(&maskusr1);
                                                                 
-                                                            }
-                                                        break;                                   
+                                                            
                                                     }
 
                                                 default:
-                                                    while (1)
-                                                    {   
+                                                    
                                                         sigsuspend(&maskusr1);
                                                         
-                                                    }
+                                                    
                                                 break;
 
                                             }
                                         default:
-                                            while (1)
-                                                {   
+                                                
                                                     sigsuspend(&maskusr1);
                                                     
-                                                }
-                                           // wait(NULL);
-                                        //break;
+                                                
+                                           
                                     }
-                                //wait(NULL);
-                                //break;
+                               
                             }
                     default:
                         pids.pid41 = fork();
@@ -359,39 +338,35 @@ int main()
                                                                     case 0:
                                                                         printf("|_55: %d\n", getpid());
                                                                         pids.pid55 = getpid();
-                                                                        while (1)
-                                                                        {   
+                                                                         
                                                                             sigsuspend(&maskusr1);
                                                                             
-                                                                        }
+                                                                        
                                                                     break;
 
                                                                     default:
-                                                                        while (1)
-                                                                        {   
+                                                                           
                                                                             sigsuspend(&maskusr1);
                                                                             
-                                                                        }
-                                                                    break;      
+                                                                        
                                                                 }
                                                             break;
 
                                                             default:
-                                                                while (1)
-                                                                {   
+                                                                 
+                                                                   
                                                                     sigsuspend(&maskusr1);
                                                                     
-                                                                }
-                                                            break;                                   
+                                                                
+                                                                                               
                                                         }
 
                                                     default:
-                                                        while (1)
-                                                        {   
-                                                            sigsuspend(&maskusr1);
+                                                        
+                                                           sigsuspend(&maskusr1);
                                                             
-                                                        }
-                                                    break;
+                                                    
+                                                    
 
                                                 }
 
@@ -426,83 +401,62 @@ int main()
                                                             case 0:
                                                                 printf("|_53: %d\n", getpid());
                                                                 pids.pid53 = getpid();
-                                                                while (1)
-                                                                {   
-                                                                    sigsuspend(&maskusr1);
+                                                                kill(pids.pid37, SIGUSR2);
+
+                                                                sigsuspend(&maskusr1);
                                                                     
-                                                                }
+                                                                
                                                             break;
 
                                                             default:
-                                                                while (1)
-                                                                {   
+                                                                 
                                                                     sigsuspend(&maskusr1);
-                                                                }
-                                                            break;                                   
+                                                                
+                                                                                           
                                                         }
 
                                                     default:
-                                                        while (1)
-                                                        {   
+                                                        
+                                                           
                                                             sigsuspend(&maskusr1);
                                                             
-                                                        }
-                                                    break;
+                                                        
 
                                                 }
                                             default:
-                                                while (1)
-                                                    {   
+                                                
+                                                       
                                                         sigsuspend(&maskusr1);
                                                         
-                                                    }
+                                                    
 
-                                            break;
                                         }
                                         break;   
                                 }
 
                             default:
-                                while (1)
-                                {   
-                                    sigsuspend(&maskusr1);
-                                }
-                            //break;
-                            //wait(NULL);
-
+                                 
+                                  sigsuspend(&maskusr1);
+                                
 
                         }
 
                 }
             default:
-                while(1)
-                {
+                
                     sigsuspend(&maskusr1);
 
-
-                }
-
-            //break;
-            //wait(NULL);
-
         }
 
-        while (1)
-        {
+        
             sigsuspend(&maskusr1);
-            
-        }
-        break;
 
     default:
 
 
-        while (1)
-                {
                     sigsuspend(&maskusr2);
-                }        
+                       
 
-        //wait(NULL);
 
     }
 }
@@ -517,7 +471,6 @@ void sigusrHandler1(int sig)
         if (getpid() == pids.pid58)
         {
             puts("Terminando proceso 58...");
-            sleep(1);
             exit(0);
 
         }
@@ -525,7 +478,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 57...");
             kill(pids.pid58, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -533,7 +485,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 56...");
             kill(pids.pid52, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -541,14 +492,12 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 55...");
             kill(pids.pid56, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
         if (getpid() == pids.pid53)
         {
             puts("Terminando proceso 53...");
-            sleep(1);
             exit(0);
 
         }
@@ -556,7 +505,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 49...");
             kill(pids.pid52, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -564,14 +512,12 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 45...");
             kill(pids.pid49, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
         if (getpid() == pids.pid52)
         {
             puts("Terminando proceso 52...");
-            sleep(1);
             exit(0);
 
         }
@@ -579,14 +525,12 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 48...");
             kill(pids.pid52, SIGTERM);
-            sleep(1);
             exit(0);
 
         }if (getpid() == pids.pid44)
         {
             puts("Terminando proceso 44...");
             kill(pids.pid48, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -594,7 +538,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 44...");
             kill(pids.pid48, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -603,14 +546,12 @@ void sigusrHandler1(int sig)
             puts("Terminando proceso 41...");
             kill(pids.pid44, SIGTERM);
             kill(pids.pid45, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
         if (getpid() == pids.pid54)
         {
             puts("Terminando proceso 54...");
-            sleep(1);
             exit(0);
 
         }
@@ -618,7 +559,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 51...");
             kill(pids.pid54, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -626,7 +566,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 47...");
             kill(pids.pid51, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -634,14 +573,12 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 43...");
             kill(pids.pid47, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
         if (getpid() == pids.pid50)
         {
             puts("Terminando proceso 50...");
-            sleep(1);
             exit(0);
 
         }
@@ -649,7 +586,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 46...");
             kill(pids.pid50, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -657,7 +593,6 @@ void sigusrHandler1(int sig)
         {
             puts("Terminando proceso 42...");
             kill(pids.pid46, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -666,7 +601,6 @@ void sigusrHandler1(int sig)
             puts("Terminando proceso 40...");
             kill(pids.pid42, SIGTERM);
             kill(pids.pid43, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -675,7 +609,6 @@ void sigusrHandler1(int sig)
             puts("Terminando proceso 39...");
             kill(pids.pid41, SIGTERM);
             kill(pids.pid40,SIGTERM);
-            sleep(1);
             exit(0);
 
         }
@@ -683,7 +616,6 @@ void sigusrHandler1(int sig)
         {
             puts("terminando proceso 38...");
             kill(pids.pid39, SIGTERM);
-            sleep(1);
             exit(0);
 
         }
