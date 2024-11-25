@@ -139,8 +139,7 @@ int main() {
                                                     printf("|_50: %d\n", getpid());
                                                     pids.pid54 = fork();
                                                     pids.pid50 = getpid();
-                                                    sigsuspend(&maskusr1);
-                                                    exit(0);
+                                                    
 
                                                     switch (pids.pid54) {
                                                         case -1:
@@ -152,8 +151,7 @@ int main() {
                                                             printf("|_54: %d\n", getpid());
                                                             pids.pid56 = fork();
                                                             pids.pid54 = getpid();
-                                                            sigsuspend(&maskusr1);
-                                                            exit(0);
+                                                            
 
                                                             switch (pids.pid56) {
                                                                 case -1:
@@ -287,8 +285,7 @@ int main() {
                                                             printf("|_52: %d\n", getpid());
                                                             pids.pid55 = fork();
                                                             pids.pid52 = getpid();
-                                                            sigsuspend(&maskusr1);
-                                                            exit(0);
+                                                            
                                                             switch (pids.pid55) {
                                                                 case -1:
                                                                     perror("Error en el dork 55");
