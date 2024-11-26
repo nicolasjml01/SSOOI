@@ -311,6 +311,7 @@ int main() {
 
                                                             sigsuspend(&maskusr1);
                                                             kill(pids.pid52,SIGTERM);
+                                                        
                                                     }
 
                                                 default:
@@ -393,10 +394,14 @@ int main() {
 }
 
 // MANEJADORES DE SIGTERM
-void sigusrHandler1(int sig) { printf("Terminando proceso %d...\n", getpid()); }
+void sigusrHandler1(int sig) { 
+    printf("Terminando proceso %d...\n", getpid()); 
+}
 
 // MANEJADORES DE SIGUSR2 (MATAR A N2 Y N3)
-void sigusrHandler2(int sig) { puts("Terminando proceso..."); }
+void sigusrHandler2(int sig) { 
+    printf("Terminando proceso...");
+}
 
 // Manejador para SIGCHLD
 void sigchld_handler(int sig) {
