@@ -4,10 +4,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-// Librerias para trabajar con mmap
-#include <sys/mman.h>
-#include <fcntl.h>
-
 
 // PROTOTIPO MANEJADORES
 void sigusrHandler1(int sig);
@@ -38,41 +34,12 @@ typedef struct {
     pid_t pid56;
     pid_t pid57;
     pid_t pid58;
+    int mediavuelta;
 } info;
 
 info pids;
 
 int main() {    
-
-    // Crear y abrir el archivo para memoria compartida
-    int fd = open("/tmp/memfile", O_RDWR | O_CREAT | O_TRUNC, 0600);
-    if (fd == -1) {
-        perror("Error al abrir archivo para mmap");
-        exit(1);
-    }
-
-    // Ajustar el tamaño del archivo
-    if (ftruncate(fd, sizeof(info)) == -1) {
-        perror("Error al ajustar tamaño del archivo para mmap");
-        close(fd);
-        exit(1);
-    }
-
-    // Mapear el archivo en memoria compartida
-    info* shared_pids = mmap(NULL, sizeof(info), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (shared_pids == MAP_FAILED) {
-        perror("Error en mmap");
-        close(fd);
-        exit(1);
-    }
-
-    // Cerrar el descriptor de archivo ya que no es necesario una vez proyectado
-    close(fd);
-
-    // Inicializar los valores de `shared_pids` en memoria compartida
-    *shared_pids = pids; // Copia la estructura inicial
-
-
     // CREACION DE MANEJADORES Y CONFIGURACION
 
     struct sigaction susr1;
@@ -95,22 +62,7 @@ int main() {
         perror("Error en sigprocmask");
         exit(-1);
     }
-
-    // MASKS DE SUSPEND PARA SIGTERM (INFINITO)
-    sigset_t maskusr1;
-    sigfillset(&maskusr1);
-    sigdelset(&maskusr1, SIGTERM);
-    sigdelset(&maskusr1, SIGUSR1);
-    sigdelset(&maskusr1, SIGCHLD);
-    sigdelset(&maskusr1, SIGINT);
-
-    // MASKS DE SUSPEND PARA SIGTERM (KILL FINAL)
-    sigset_t maskusr2;
-    sigfillset(&maskusr2);
-    sigdelset(&maskusr2, SIGUSR2);
-    sigdelset(&maskusr2, SIGTERM);
-    sigdelset(&maskusr2, SIGINT);
-
+    
     // ASIGNACION DE MANEJADORES
 
     if (sigaction(SIGTERM, &susr1, NULL) == -1) {
@@ -171,29 +123,19 @@ int main() {
                                                   printf("|_50: %d\n", getpid());
                                                   
                                                   // Crear el proceso 54 como hijo de 50
-                                                  pids.pid54 = fork(); 
-
+                                                  pids.pid54 = fork();  
                                                   switch (pids.pid54) {
                                                       case -1: perror("Error en el fork 54"); exit(-1);
                                                       case 0:
                                                           printf("|_54: %d\n", getpid());
-                                                          // Guardar el PID de 54 en la memoria compartida
-                                                          if (getpid() == pids.pid54) {
-                                                              shared_pids->pid54 = getpid();  // Guardar pid en la memoria compartida
-                                                              printf("Proceso 54 (PID: %d) ha guardado su PID en memoria compartida.\n", getpid());
-                                                          }
                                                           
                                                           // Crear el proceso 56 como hijo de 54
-                                                          pids.pid56 = fork(); 
+                                                          pids.pid56 = fork();  
                                                           switch (pids.pid56) {
                                                               case -1: perror("Error en el fork 56"); exit(-1);
                                                               case 0:
                                                                   printf("|_56: %d\n", getpid());
-                                                                  if (getpid() == pids.pid56) {
-                                                                      shared_pids->pid56 = getpid();  // Guardar pid en la memoria compartida
-                                                                      printf("Proceso 56 (PID: %d) ha guardado su PID en memoria compartida.\n", getpid());
-                                                                  }
-
+                                                                  
                                                                   // Crear el proceso 57 como hijo de 56
                                                                   pids.pid57 = fork();  
                                                                   switch (pids.pid57) {
@@ -211,32 +153,26 @@ int main() {
                                                                                   exit(0);
                                                                               default:
                                                                                   sigsuspend(&maskusr1);
-                                                                                  kill(pids.pid58, SIGTERM);
                                                                                   exit(0);
                                                                           }
                                                                       default:
                                                                           sigsuspend(&maskusr1);
-                                                                          kill(pids.pid57, SIGTERM);
                                                                           exit(0);
                                                                   }
                                                               default:
                                                                   sigsuspend(&maskusr1);
-                                                                  kill(pids.pid56, SIGTERM);
                                                                   exit(0);
                                                           }
                                                       default:
                                                           sigsuspend(&maskusr1);
-                                                          kill(pids.pid54, SIGTERM);
                                                           exit(0);
                                                   }
                                               default:
                                                   sigsuspend(&maskusr1);
-                                                  kill(pids.pid50, SIGTERM);
                                                   exit(0);
                                           }
                                       default:
                                           sigsuspend(&maskusr1);
-                                          kill(pids.pid46, SIGTERM);
                                           exit(0);
                                   }
                               default:
@@ -260,22 +196,18 @@ int main() {
                                                       case -1: perror("Error en el fork 51"); exit(-1);
                                                       case 0:
                                                           printf("|_51: %d\n", getpid());
-                                                          
                                                           sigsuspend(&maskusr1); 
                                                           exit(0);
                                                       default:
                                                           sigsuspend(&maskusr1);
-                                                          kill(pids.pid51, SIGTERM);
                                                           exit(0);
                                                   }
                                               default:
                                                   sigsuspend(&maskusr1);
-                                                  kill(pids.pid47, SIGTERM);
                                                   exit(0);
                                           }
                                       default:
                                           sigsuspend(&maskusr1);
-                                          kill(pids.pid43, SIGTERM);
                                           exit(0);
                                   }
                           }
@@ -314,26 +246,18 @@ int main() {
                                                               case -1: perror("Error en el fork 55"); exit(-1);
                                                               case 0:
                                                                   printf("|_55: %d\n", getpid());
-                                                                  if (getpid() == pids.pid55) {
-                                                                    shared_pids->pid55 = getpid();  // Guardar pid en la memoria compartida
-                                                                    printf("Proceso 55 (PID: %d) ha guardado su PID en memoria compartida.\n", getpid());
-                                                                  }
-
                                                                   sigsuspend(&maskusr1); 
                                                                   exit(0);
                                                               default:
                                                                   sigsuspend(&maskusr1);  
-                                                                  kill(pids.pid55, SIGTERM);  
                                                                   exit(0);
                                                           }
                                                       default:
                                                           sigsuspend(&maskusr1);  
-                                                          kill(pids.pid52, SIGTERM);  
                                                           exit(0);
                                                   }
                                               default:
                                                   sigsuspend(&maskusr1);  
-                                                  kill(pids.pid48, SIGTERM);  
                                                   exit(0);
                                           }
                                       default:
@@ -361,83 +285,64 @@ int main() {
                                                                   exit(0);
                                                               default:
                                                                   sigsuspend(&maskusr1);
-                                                                  kill(pids.pid53, SIGTERM);
                                                                   exit(0);
                                                           }
                                                       default:
                                                           sigsuspend(&maskusr1);
-                                                          kill(pids.pid49, SIGTERM);
                                                           exit(0);
                                                   }
                                               default:
                                                   sigsuspend(&maskusr1);
-                                                  kill(pids.pid45, SIGTERM);
                                                   exit(0);
                                           }
                                   }
                               default:
                                   sigsuspend(&maskusr1);
-                                  kill(pids.pid41, SIGTERM);
                                   exit(0);
                           }
                   }
               default:
                   sigsuspend(&maskusr1);
-                  kill(pids.pid39, SIGTERM);
                   exit(0);
           }
       default:
           sigsuspend(&maskusr1);
-          kill(pids.pid38, SIGTERM);
           exit(0);
   }
+  return 0;
 }
 
 
 
+// Manejador de señales SIGTERM
+void sigusrHandler1(int sig) { 
+    pid_t pid = getpid();
+    
+    if (pid == pids.pid37) {
+        printf("Proceso 37 (pid %d) recibe SIGTERM: matando a 37\n", pid);
+        kill(pids.pid38, SIGTERM); // Matar a 37
+    } 
+    else if (pid == pids.pid38) {
+        printf("Proceso 38 (pid %d) recibe SIGTERM: matando a 39\n", pid);
+        kill(pids.pid39, SIGTERM); // Matar a 38
+    } 
+    else if (pid == pids.pid39) {
+        printf("Proceso 39 (pid %d) recibe SIGTERM: matando a 40 y 41\n", pid);
+        kill(pids.pid40, SIGTERM); // Matar a 39
+        kill(pids.pid41, SIGTERM); // Matar a 39
+    } 
+    else if (pid == pids.pid40) {
+            printf("Proceso 40 (pid %d) recibe SIGTERM: matando a 42\n", pid);
+        kill(pids.pid42, SIGTERM); // Matar a 37
+    } 
+    else if (pid == pids.pid42) {
+        printf("Proceso 42 (pid %d) recibe SIGTERM: matando a 46\n", pid);
+        kill(pids.pid46, SIGTERM); // Matar a 37
+    } 
 
-// Manejadora global para matar procesos
-void sigusrHandler1(int sig) {
-    pid_t pid_to_kill;
-    pid_t parent_pid = getppid();  // Obtener el PID del proceso padre
 
-    switch (parent_pid) {
-        case pids.pid40: // Caso cuando el padre es 40
-            if (sig == SIGUSR1) {
-                // El proceso 51 envía SIGUSR1 a 40 para matar a 54
-                pid_to_kill = pids.pid54;
-                printf("Proceso 40 recibió la señal para matar al proceso 54\n");
-            }
-            break;
-
-        case pids.pid39: // Caso cuando el padre es 39
-            if (sig == SIGUSR1) {
-                // El proceso 55 envía SIGUSR1 a 39 para matar a 56
-                pid_to_kill = pids.pid56;
-                printf("Proceso 39 recibió la señal para matar al proceso 56\n");
-            }
-            break;
-
-        case pids.pid41: // Caso cuando el padre es 41
-            if (sig == SIGUSR1) {
-                // El proceso 53 envía SIGUSR1 a 41 para matar a 55
-                pid_to_kill = pids.pid55;
-                printf("Proceso 41 recibió la señal para matar al proceso 55\n");
-            }
-            break;
-
-        default:
-            pid_to_kill = -1;  // No hacer nada si el proceso padre no está en la lista
-            break;
-    }
-
-    if (pid_to_kill != -1) {
-        // Enviar SIGTERM al proceso que debe ser terminado
-        kill(pid_to_kill, SIGTERM);
-        printf("Proceso %d ha sido terminado por el proceso padre %d.\n", pid_to_kill, parent_pid);
-    }
+    exit(0);
 }
-
 
 // MANEJADORES DE SIGUSR2 (MATAR A N2 Y N3)
 void sigusrHandler2(int sig) { 
