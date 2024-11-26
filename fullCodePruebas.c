@@ -96,211 +96,192 @@ int main() {
     printf("|_37: %d\n", pids.pid37);
     pids.pid38 = fork();  // Creacion de 38
 
-switch (pids.pid38) {
-    case -1:
-        perror("Error en el fork 38");
-        kill(pids.pid37, SIGKILL);  // Mata el proceso anterior en caso de error
-        exit(-1);
-        break;
+  switch (pids.pid38) {
+      case -1:
+          perror("Error en el fork 38");
+          kill(pids.pid37, SIGKILL);  // Mata el proceso anterior en caso de error
+          exit(-1);
 
-    case 0:
-        printf("|_38: %d\n", getpid());
-        pids.pid39 = fork();  // Creación de 39
-        switch (pids.pid39) {
-            case -1: perror("Error en el fork 39"); exit(-1);
-            case 0:
-                printf("|_39: %d\n", getpid());
-                pids.pid40 = fork();  // Creación de 40
-                switch (pids.pid40) {
-                    case -1: perror("Error en el fork 40"); exit(-1);
-                    case 0:
-                        printf("|_40 %d\n", getpid());
-                        pids.pid42 = fork();  // Creación de 42
-                        switch (pids.pid42) {
-                            case -1: perror("Error en el fork 42"); exit(-1);
-                            case 0:
-                                printf("|_42: %d\n", getpid());
-                                pids.pid46 = fork();  // Creación de 46
-                                switch (pids.pid46) {
-                                    case -1: perror("Error en el fork 46"); exit(-1);
-                                    case 0:
-                                        printf("|_46: %d\n", getpid());
-                                        pids.pid50 = fork();  // Creación de 50
-                                        switch (pids.pid50) {
-                                            case -1: perror("Error en el fork 50"); exit(-1);
-                                            case 0:
-                                                printf("|_50: %d\n", getpid());
-                                                pids.pid54 = fork();  // Creación de 54
-                                                switch (pids.pid54) {
-                                                    case -1:
-                                                        perror("Error en el fork 54");
-                                                        exit(-1);
-                                                    case 0:
-                                                        printf("|_54: %d\n", getpid());
-                                                        pids.pid56 = fork();  // Creación de 56
-                                                        switch (pids.pid56) {
-                                                            case -1: perror("Error en el fork 56"); exit(-1);
-                                                            case 0:
-                                                                printf("|_56: %d\n", getpid());
-                                                                pids.pid57 = fork();  // Creación de 57
-                                                                switch (pids.pid57) {
-                                                                    case -1: perror("Error en el fork 57"); exit(-1);
-                                                                    case 0:
-                                                                        printf("|_57: %d\n", getpid());
-                                                                        pids.pid58 = fork();  // Creación de 58
-                                                                        switch (pids.pid58) {
-                                                                            case -1: perror("Error en el fork 58"); exit(-1);
-                                                                            case 0:
-                                                                                printf("|_58: %d\n", getpid());
-                                                                                sigsuspend(&maskusr1);  // Proceso hoja, espera señal
-                                                                                exit(0);  // Proceso hoja termina
-                                                                            default:
-                                                                                sigsuspend(&maskusr1);  
-                                                                                kill(pids.pid58, SIGTERM);  
-                                                                                exit(0);  // Termina proceso 57
-                                                                        }
-                                                                    default:
-                                                                        sigsuspend(&maskusr1);  
-                                                                        kill(pids.pid57, SIGTERM);  
-                                                                        exit(0);  // Termina proceso 56
-                                                                }
-                                                            default:
-                                                                sigsuspend(&maskusr1);  
-                                                                kill(pids.pid56, SIGTERM);  
-                                                                exit(0);  // Termina proceso 54
-                                                        }
-                                                    default:
-                                                        sigsuspend(&maskusr1);  
-                                                        kill(pids.pid54, SIGTERM);  
-                                                        exit(0);  // Termina proceso 50
-                                                }
-                                            default:
-                                                sigsuspend(&maskusr1);  
-                                                kill(pids.pid50, SIGTERM);  
-                                                exit(0);  // Termina proceso 46
-                                        }
-                                    default:
-                                        sigsuspend(&maskusr1);  
-                                        kill(pids.pid46, SIGTERM);  
-                                        exit(0);  // Termina proceso 42
-                                }
-                            default:
-                                pids.pid43 = fork();  // Creación de 43
-                                switch (pids.pid43) {
-                                    case -1: perror("Error en el fork 43"); exit(-1);
-                                    case 0:
-                                        printf("|_43: %d\n", getpid());
-                                        pids.pid47 = fork();  // Creación de 47
-                                        switch (pids.pid47) {
-                                            case -1: perror("Error en fork 47"); exit(-1);
-                                            case 0:
-                                                printf("|_47: %d\n", getpid());
-                                                pids.pid51 = fork();  // Creación de 51
-                                                switch (pids.pid51) {
-                                                    case -1: perror("Error en el fork 51"); exit(-1);
-                                                    case 0:
-                                                        printf("|_51: %d\n", getpid());
-                                                        sigsuspend(&maskusr1);  
-                                                        exit(0);  // Proceso hoja termina
-                                                    default:
-                                                        sigsuspend(&maskusr1);  
-                                                        kill(pids.pid51, SIGTERM);  
-                                                        exit(0);  // Termina proceso 47
-                                                }
-                                            default:
-                                                sigsuspend(&maskusr1);  
-                                                kill(pids.pid47, SIGTERM);  
-                                                exit(0);  // Termina proceso 43
-                                        }
-                                    default:
-                                        sigsuspend(&maskusr1);  
-                                        kill(pids.pid43, SIGTERM);  
-                                        exit(0);  // Termina proceso 42
-                                }
-                        }
-                    default:
-                        pids.pid41 = fork();  // Creación de 41
-                        switch (pids.pid41) {
-                            case -1: perror("Error en el fork 41"); exit(-1);
-                            case 0:
-                                printf("|_41: %d\n", getpid());
-                                pids.pid44 = fork();  // Creación de 44
-                                switch (pids.pid44) {
-                                    case -1: perror("Error en el fork 44"); exit(-1);
-                                    case 0:
-                                        printf("|_44: %d\n", getpid());
-                                        pids.pid48 = fork();  // Creación de 48
-                                        switch (pids.pid48) {
-                                            case -1: perror("Error en fork 48"); exit(-1);
-                                            case 0:
-                                                printf("|_48: %d\n", getpid());
-                                                pids.pid52 = fork();  // Creación de 52
-                                                switch (pids.pid52) {
-                                                    case -1: perror("Error en el fork 52"); exit(-1);
-                                                    case 0:
-                                                        printf("|_52: %d\n", getpid());
-                                                        sigsuspend(&maskusr1);  
-                                                        exit(0);  // Proceso hoja termina
-                                                    default:
-                                                        sigsuspend(&maskusr1);  
-                                                        kill(pids.pid52, SIGTERM);  
-                                                        exit(0);  // Termina proceso 48
-                                                }
-                                            default:
-                                                sigsuspend(&maskusr1);  
-                                                kill(pids.pid48, SIGTERM);  
-                                                exit(0);  // Termina proceso 44
-                                        }
-                                    default:
-                                        pids.pid45 = fork();  // Creación de 45
-                                        switch (pids.pid45) {
-                                            case -1: perror("Error en el fork 45"); exit(-1);
-                                            case 0:
-                                                printf("|_45: %d\n", getpid());
-                                                pids.pid49 = fork();  // Creación de 49
-                                                switch (pids.pid49) {
-                                                    case -1: perror("Error en fork 49"); exit(-1);
-                                                    case 0:
-                                                        printf("|_49: %d\n", getpid());
-                                                        pids.pid53 = fork();  // Creación de 53
-                                                        switch (pids.pid53) {
-                                                            case -1: perror("Error en el fork 53"); exit(-1);
-                                                            case 0:
-                                                                printf("|_53: %d\n", getpid());
-                                                                sigsuspend(&maskusr1);  
-                                                                exit(0);  // Proceso hoja termina
-                                                            default:
-                                                                sigsuspend(&maskusr1);  
-                                                                kill(pids.pid53, SIGTERM);  
-                                                                exit(0);  // Termina proceso 49
-                                                        }
-                                                    default:
-                                                        sigsuspend(&maskusr1);  
-                                                        kill(pids.pid49, SIGTERM);  
-                                                        exit(0);  // Termina proceso 45
-                                                }
-                                            default:
-                                                sigsuspend(&maskusr1);  
-                                                kill(pids.pid45, SIGTERM);  
-                                                exit(0);  // Termina proceso 44
-                                        }
-                                }
-                            default:
-                                sigsuspend(&maskusr1);  
-                                kill(pids.pid41, SIGTERM);  
-                                exit(0);  // Termina proceso 40
-                        }
-                }
-            default:
-                sigsuspend(&maskusr1);  
-                kill(pids.pid39, SIGTERM);  
-                exit(0);  // Termina proceso 38
-        }
-    default:
-        sigsuspend(&maskusr1);  
-        kill(pids.pid38, SIGTERM);  
-        exit(0);  // Termina proceso principal
-}
+      case 0:
+          printf("|_38: %d\n", getpid());
+          pids.pid39 = fork();  // Creación de 39
+          switch (pids.pid39) {
+              case -1: perror("Error en el fork 39"); exit(-1);
+              case 0:
+                  printf("|_39: %d\n", getpid());
+                  pids.pid40 = fork();  // Creación de 40
+                  switch (pids.pid40) {
+                      case -1: perror("Error en el fork 40"); exit(-1);
+                      case 0:
+                          printf("|_40: %d\n", getpid());
+                          pids.pid42 = fork();  // Creación de 42
+                          switch (pids.pid42) {
+                              case -1: perror("Error en el fork 42"); exit(-1);
+                              case 0:
+                                  printf("|_42: %d\n", getpid());
+                                  pids.pid46 = fork();  // Creación de 46
+                                  switch (pids.pid46) {
+                                      case -1: perror("Error en el fork 46"); exit(-1);
+                                      case 0:
+                                          printf("|_46: %d\n", getpid());
+                                          pids.pid50 = fork();  // Creación de 50
+                                          switch (pids.pid50) {
+                                              case -1: perror("Error en el fork 50"); exit(-1);
+                                              case 0:
+                                                  printf("|_50: %d\n", getpid());
+                                                  pids.pid54 = fork();  // Creación de 54
+                                                  switch (pids.pid54) {
+                                                      case -1: perror("Error en el fork 54"); exit(-1);
+                                                      case 0:
+                                                          printf("|_54: %d\n", getpid());
+                                                          pids.pid56 = fork();  // Creación de 56
+                                                          switch (pids.pid56) {
+                                                              case -1: perror("Error en el fork 56"); exit(-1);
+                                                              case 0:
+                                                                  printf("|_56: %d\n", getpid());
+                                                                  pids.pid57 = fork();  // Creación de 57
+                                                                  switch (pids.pid57) {
+                                                                      case -1: perror("Error en el fork 57"); exit(-1);
+                                                                      case 0:
+                                                                          printf("|_57: %d\n", getpid());
+                                                                          pids.pid58 = fork();  // Creación de 58
+                                                                          switch (pids.pid58) {
+                                                                              case -1: perror("Error en el fork 58"); exit(-1);
+                                                                              case 0:
+                                                                                  printf("|_58: %d\n", getpid());
+                                                                                  sigsuspend(&maskusr1);  // Proceso hoja
+                                                                                  exit(0);
+                                                                              default:
+                                                                                  sigsuspend(&maskusr1);  
+                                                                                  kill(pids.pid58, SIGTERM);  
+                                                                                  exit(0);
+                                                                          }
+                                                                      default:
+                                                                          sigsuspend(&maskusr1);  
+                                                                          kill(pids.pid57, SIGTERM);  
+                                                                          exit(0);
+                                                                  }
+                                                              default:
+                                                                  sigsuspend(&maskusr1);  
+                                                                  kill(pids.pid56, SIGTERM);  
+                                                                  exit(0);
+                                                          }
+                                                      default:
+                                                          sigsuspend(&maskusr1);  
+                                                          kill(pids.pid54, SIGTERM);  
+                                                          exit(0);
+                                                  }
+                                              default:
+                                                  sigsuspend(&maskusr1);  
+                                                  kill(pids.pid50, SIGTERM);  
+                                                  exit(0);
+                                          }
+                                      default:
+                                          sigsuspend(&maskusr1);  
+                                          kill(pids.pid46, SIGTERM);  
+                                          exit(0);
+                                  }
+                              default:
+                                  pids.pid43 = fork();  // Creación de 43
+                                  switch (pids.pid43) {
+                                      case -1: perror("Error en el fork 43"); exit(-1);
+                                      case 0:
+                                          printf("|_43: %d\n", getpid());
+                                          pids.pid47 = fork();  // Creación de 47
+                                          switch (pids.pid47) {
+                                              case -1: perror("Error en fork 47"); exit(-1);
+                                              case 0:
+                                                  printf("|_47: %d\n", getpid());
+                                                  pids.pid51 = fork();  // Creación de 51
+                                                  switch (pids.pid51) {
+                                                      case -1: perror("Error en el fork 51"); exit(-1);
+                                                      case 0:
+                                                          printf("|_51: %d\n", getpid());
+                                                          sigsuspend(&maskusr1);  
+                                                          exit(0);
+                                                      default:
+                                                          sigsuspend(&maskusr1);  
+                                                          kill(pids.pid51, SIGTERM);  
+                                                          exit(0);
+                                                  }
+                                              default:
+                                                  sigsuspend(&maskusr1);  
+                                                  kill(pids.pid47, SIGTERM);  
+                                                  exit(0);
+                                          }
+                                      default:
+                                          sigsuspend(&maskusr1);
+                                          kill(pids.pid44, SIGTERM);  
+                                          kill(pids.pid43, SIGTERM);  
+                                          exit(0);
+                                  }
+                          }
+                      default:
+                          pids.pid41 = fork();  // Creación de 41
+                          switch (pids.pid41) {
+                              case -1: perror("Error en el fork 41"); exit(-1);
+                              case 0:
+                                  printf("|_41: %d\n", getpid());
+                                  pids.pid44 = fork();  // Creación de 44
+                                  switch (pids.pid44) {
+                                      case -1: perror("Error en el fork 44"); exit(-1);
+                                      case 0:
+                                          printf("|_44: %d\n", getpid());
+                                          pids.pid48 = fork();  // Creación de 48
+                                          switch (pids.pid48) {
+                                              case -1: perror("Error en fork 48"); exit(-1);
+                                              case 0:
+                                                  printf("|_48: %d\n", getpid());
+                                                  pids.pid52 = fork();  // Creación de 52
+                                                  switch (pids.pid52) {
+                                                      case -1: perror("Error en el fork 52"); exit(-1);
+                                                      case 0:
+                                                          printf("|_52: %d\n", getpid());
+                                                          pids.pid55 = fork();  // Creación de 55
+                                                          switch (pids.pid55) {
+                                                              case -1: perror("Error en el fork 55"); exit(-1);
+                                                              case 0:
+                                                                  printf("|_55: %d\n", getpid());
+                                                                  sigsuspend(&maskusr1);  
+                                                                  exit(0);
+                                                              default:
+                                                                  sigsuspend(&maskusr1);  
+                                                                  kill(pids.pid55, SIGTERM);  
+                                                                  exit(0);
+                                                          }
+                                                      default:
+                                                          sigsuspend(&maskusr1);  
+                                                          kill(pids.pid52, SIGTERM);  
+                                                          exit(0);
+                                                  }
+                                              default:
+                                                  sigsuspend(&maskusr1);  
+                                                  kill(pids.pid48, SIGTERM);  
+                                                  exit(0);
+                                          }
+                                      default:
+                                          sigsuspend(&maskusr1);  
+                                          kill(pids.pid44, SIGTERM);  
+                                          exit(0);
+                                  }
+                              default:
+                                  sigsuspend(&maskusr1);  
+                                  kill(pids.pid41, SIGTERM);  
+                                  kill(pids.pid40, SIGTERM); 
+                                  exit(0);
+                          }
+                  }
+              default:
+                  sigsuspend(&maskusr1);  
+                  kill(pids.pid39, SIGTERM);  
+                  exit(0);
+          }
+      default:
+          sigsuspend(&maskusr1);  
+          kill(pids.pid38, SIGTERM);  
+          exit(0);
+  }
+
 }
 
 
