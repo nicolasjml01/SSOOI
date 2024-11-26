@@ -96,7 +96,7 @@ int main() {
     printf("|_37: %d\n", pids.pid37);
     pids.pid38 = fork();  // Creacion de 38
 
-    switch (pids.pid38) {
+switch (pids.pid38) {
     case -1:
         perror("Error en el fork 38");
         kill(pids.pid37, SIGKILL);  // Mata el proceso anterior en caso de error
@@ -299,7 +299,8 @@ int main() {
     default:
         sigsuspend(&maskusr1);  
         kill(pids.pid38, SIGTERM);  
-        exit(0);  // Proceso inicial termina
+        exit(0);  // Termina proceso principal
+}
 }
 
 
