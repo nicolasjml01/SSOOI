@@ -36,7 +36,7 @@ info pids;
 
 int main() {  
     const char *f="pids.txt";
-    int fd,tam;
+    int fd;
 
     fd = open(f, O_RDWR | O_CREAT, 0666);
     if (fd == -1) {
