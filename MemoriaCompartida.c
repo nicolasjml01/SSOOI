@@ -50,12 +50,12 @@ int main() {
     }
 
     // Crear memoria compartida para almacenar múltiples PIDs
-    shared_data =(shared_info *) mmap(NULL, sizeof(shared_info), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, fd, 0);
-   close(fd);
+    shared_data =(shared_info *) mmap(NULL, sizeof(shared_info), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (shared_data == MAP_FAILED) {
         perror("Error en mmap");
         exit(-1);
     }  
+   close(fd);
 
     
 
