@@ -35,7 +35,7 @@ info pids;
 
 int main() {  
     // Crear memoria compartida para almacenar múltiples PIDs
-    shared_data = mmap(NULL, sizeof(shared_info), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    shared_data =(shared_info *) mmap(NULL, sizeof(shared_info), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (shared_data == MAP_FAILED) {
         perror("Error en mmap");
         exit(-1);
@@ -169,7 +169,7 @@ int main() {
     }
     // Liberar la memoria compartida antes de salir
     if (getpid() == shared_data->pids[0]) {
-        munmap(shared_data, sizeof(shared_info));
+        munmap((void *)shared_data, sizeof(shared_info));
     }
 
     return 0;
