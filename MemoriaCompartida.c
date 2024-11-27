@@ -162,11 +162,13 @@ int main() {
                                 default:
                                     // Volver a proceso 40 para crear el hijo adicional 43
                                     pids.pid43 = fork();  
-                                    pids.pid43 = getpid();
                                     switch (pids.pid43) {
                                         case -1: perror("Error en el fork 43"); exit(-1);
                                         case 0:
                                             printf("|_43: %d\n", getpid());
+                                            pids.pid43 = getpid();
+                                            sigsuspend(&maskusr1);  
+
                                         default:
                                             sigsuspend(&maskusr1);  
                                             wait(NULL);                                        
