@@ -6,6 +6,7 @@
 #include <unistd.h>
 // Biblioteca mmap
 #include <sys/mman.h>
+#include <fcntl.h>
 
 // PROTOTIPO MANEJADORES
 void sigusrHandler1(int sig);
@@ -34,12 +35,29 @@ typedef struct {
 info pids;
 
 int main() {  
+    const char *f="pids.txt";
+    int fd,tam;
+
+    fd = open(f, O_RDWR | O_CREAT, 0666);
+    if (fd == -1) {
+        perror("Error al abrir el archivo");
+        return 1;
+    }
+    if (ftruncate(fd, sizeof(shared_info)) == -1) {
+        perror("Error al ajustar el tamaño del archivo");
+        close(fd);
+        return 1;
+    }
+
     // Crear memoria compartida para almacenar múltiples PIDs
-    shared_data =(shared_info *) mmap(NULL, sizeof(shared_info), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    shared_data =(shared_info *) mmap(NULL, sizeof(shared_info), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, fd, 0);
+   close(fd);
     if (shared_data == MAP_FAILED) {
         perror("Error en mmap");
         exit(-1);
     }  
+
+    
 
     // CREACION DE MANEJADORES Y CONFIGURACION
     struct sigaction susr1;
