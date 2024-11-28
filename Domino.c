@@ -12,8 +12,8 @@
 // PROTOTIPO MANEJADORES
 void sigusrHandler1(int sig);
 void sigusrHandler2(int sig);
-void sigusrHandler3(int sig);
 
+// BORRAR???
 void eliminarArchivo();
 
 typedef struct {
@@ -86,10 +86,6 @@ int main() {
     susr2.sa_handler = &sigusrHandler2;
     susr2.sa_flags = SA_RESTART;  // NO LETAL
 
-    struct sigaction susr3;
-    susr3.sa_handler = &sigusrHandler3;
-    susr3.sa_flags = SA_RESTART;  // NO LETAL
-
     // MASCARA DE SEÑALES
     sigset_t mask;
     sigfillset(&mask);
@@ -123,11 +119,6 @@ int main() {
     }
 
     if (sigaction(SIGUSR2, &susr2, NULL) == -1) {
-        perror("Error en sigaction usr2");
-        exit(-1);
-    }
-
-    if (sigaction(SIGUSR2, &susr3, NULL) == -1) {
         perror("Error en sigaction usr2");
         exit(-1);
     }
@@ -189,35 +180,25 @@ int main() {
                                                                               case 0:
                                                                                     pids.pid58 = getpid();
                                                                                     sigsuspend(&maskusr1);  // Proceso hoja
-                                                                                    
                                                                                 default:
-                                                                                    sigsuspend(&maskusr1);
-                                                                                    
+                                                                                    sigsuspend(&maskusr1);  
                                                                             }
                                                                         default:
                                                                             shared_data->pids[2]=getpid();
                                                                             sigsuspend(&maskusr1);
-                                                                            
-                                                                          
                                                                     }
                                                                 default:
                                                                     shared_data->pids[1]=getpid();
                                                                     sigsuspend(&maskusr1);
-                                                                    
                                                             }
                                                         default:
-                                                            sigsuspend(&maskusr1);
-                                                            
+                                                            sigsuspend(&maskusr1); 
                                                     }
                                                 default:
                                                     sigsuspend(&maskusr1);
-                                                    
-                                                  
                                             }
                                         default:
                                             sigsuspend(&maskusr1);
-                                            
-                                          
                                     }
                                 default:
                                     // Volver a proceso 40 para crear el hijo adicional 43
@@ -237,19 +218,14 @@ int main() {
                                                         case 0:
                                                             pids.pid51 = getpid();
                                                             sigsuspend(&maskusr1); 
-                                                            
                                                         default:
                                                             sigsuspend(&maskusr1);
-                                                            
                                                     }
                                                 default:
                                                     sigsuspend(&maskusr1);
-                                                    
-                                                    
                                             }
                                         default:
-                                            sigsuspend(&maskusr1);
-                                                                                      
+                                            sigsuspend(&maskusr1);                                          
                                     }
                             }
                         default:
@@ -284,15 +260,12 @@ int main() {
                                                                     
                                                                 default:
                                                                     sigsuspend(&maskusr1);  
-                                                                    
                                                             }
                                                         default:
                                                             sigsuspend(&maskusr1);
-                                                              
                                                     }
                                                 default:
-                                                    sigsuspend(&maskusr1);  
-                                                            
+                                                    sigsuspend(&maskusr1);           
                                             }
                                         default:
                                             // Hijo 45 de 41
@@ -311,201 +284,172 @@ int main() {
                                                                 case -1: perror("Error en el fork 53"); exit(-1);
                                                                 case 0:
                                                                     pids.pid53 = getpid();
+                                                                    char *mensaje = "Todos los procesos creados correctamente\n";
+                                                                    write(STDOUT_FILENO, mensaje, 41);
                                                                     sigsuspend(&maskusr1);
                                                                     
                                                                 default:
-                                                                    sigsuspend(&maskusr1);
-                                                                    
-                                                                    
+                                                                    sigsuspend(&maskusr1);   
                                                             }
                                                         default:
-                                                            sigsuspend(&maskusr1);
-                                                            
-                                                            
+                                                            sigsuspend(&maskusr1);    
                                                     }
                                                 default:
-                                                    sigsuspend(&maskusr1);
-                                                    
+                                                    sigsuspend(&maskusr1);  
                                             }
                                     }
                                 default:
-                                    sigsuspend(&maskusr1);
-                                           
+                                    sigsuspend(&maskusr1);          
                             }
                         // Fin del default del proceso 39
                         sigsuspend(&maskusr1);
-                        
                     }
                 // Default proceso 39
                 default:
-                  sigsuspend(&maskusr1);
-                                   
+                    sigsuspend(&maskusr1);               
             }
         // Default proceso 38
         default:
-            sigsuspend(&maskusr1);
-                      
+            sigsuspend(&maskusr1);             
     }
-
+    return 0;
 }
 
 
 
 // MANEJADORES DE SIGTERM
 void sigusrHandler1(int sig) {
-if(getpid()==pids.pid58)
-{
-    printf("muriendo %d...\n",getpid());
-    // Liberamos memoria compartida
-    munmap((void *)shared_data, sizeof(shared_info));
-    exit(0);
-}
+    if(getpid()==pids.pid58)
+    {
+        // Liberamos memoria compartida
+        munmap((void *)shared_data, sizeof(shared_info));
+        // Eliminamos el archivo
+        eliminarArchivo();
+        // Mensaje confirmacion
+        char *mensaje = "Todos los procesos han sido liberados\n";
+        write(STDOUT_FILENO, mensaje, 39);
+        exit(0);
+    }
 
-if(getpid()==pids.pid57)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid58,SIGTERM);
-    exit(0);
-}
+    if(getpid()==pids.pid57)
+    {
+        kill(pids.pid58,SIGTERM);
+        exit(0);
+    }
 
-if(getpid()==pids.pid56)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid57,SIGTERM);
-    exit(0);
-}
+    if(getpid()==pids.pid56)
+    {
+        kill(pids.pid57,SIGTERM);
+        exit(0);
+    }
 
-if(getpid()==pids.pid55)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(shared_data->pids[2],SIGTERM);
-    exit(0);
-}  
-if(getpid()==pids.pid53)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(shared_data->pids[3],SIGTERM);
-    exit(0);
-}
-if(getpid()==pids.pid49)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid53,SIGTERM);
-    exit(0);
-} 
+    if(getpid()==pids.pid55)
+    {
+        kill(shared_data->pids[2],SIGTERM);
+        exit(0);
+    }  
+    if(getpid()==pids.pid53)
+    {
+        kill(shared_data->pids[3],SIGTERM);
+        exit(0);
+    }
+    if(getpid()==pids.pid49)
+    {
+        kill(pids.pid53,SIGTERM);
+        exit(0);
+    } 
 
-if(getpid()==pids.pid45)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid49,SIGTERM);
-    exit(0);
-}
+    if(getpid()==pids.pid45)
+    {
+        kill(pids.pid49,SIGTERM);
+        exit(0);
+    }
 
-if(getpid()==pids.pid52)
-{
-    printf("muriendo %d...\n",getpid());
-   // kill(pids.pid44,SIGTERM);
-    exit(0);
-}
-if(getpid()==pids.pid48)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid52,SIGTERM);
-    exit(0);
-}
+    if(getpid()==pids.pid52)
+    {
+        exit(0);
+    }
+    if(getpid()==pids.pid48)
+    {
+        kill(pids.pid52,SIGTERM);
+        exit(0);
+    }
 
- if(getpid()==pids.pid44)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid48,SIGTERM);
-    exit(0);
-}
+    if(getpid()==pids.pid44)
+    {
+        kill(pids.pid48,SIGTERM);
+        exit(0);
+    }
 
-if(getpid()==pids.pid41)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid44,SIGTERM);
-    kill(pids.pid45,SIGTERM);
+    if(getpid()==pids.pid41)
+    {
+        kill(pids.pid44,SIGTERM);
+        kill(pids.pid45,SIGTERM);
 
-    exit(0);
-}
-if(getpid()==pids.pid54)
-{
-    printf("muriendo %d...\n",getpid());
-    exit(0);
-}
- 
-if(getpid()==pids.pid51)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(shared_data->pids[1],SIGTERM);
-    exit(0);
-}
+        exit(0);
+    }
+    if(getpid()==pids.pid54)
+    {
+        exit(0);
+    }
+    
+    if(getpid()==pids.pid51)
+    {
+        kill(shared_data->pids[1],SIGTERM);
+        exit(0);
+    }
 
-if(getpid()==pids.pid47)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid51,SIGTERM);
-    exit(0);
-}
-if(getpid()==pids.pid43)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid47,SIGTERM);
-    exit(0);
-}
+    if(getpid()==pids.pid47)
+    {
+        kill(pids.pid51,SIGTERM);
+        exit(0);
+    }
+    if(getpid()==pids.pid43)
+    {
+        kill(pids.pid47,SIGTERM);
+        exit(0);
+    }
 
-if(getpid()==pids.pid50)
-{
-    printf("muriendo %d...\n",getpid());
-    exit(0);
-}
-if(getpid()==pids.pid46)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid50,SIGTERM);
-    exit(0);
-}
-if(getpid()==pids.pid42)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid46,SIGTERM);
-    exit(0);
-}
+    if(getpid()==pids.pid50)
+    {
+        exit(0);
+    }
+    if(getpid()==pids.pid46)
+    {
+        kill(pids.pid50,SIGTERM);
+        exit(0);
+    }
+    if(getpid()==pids.pid42)
+    {
+        kill(pids.pid46,SIGTERM);
+        exit(0);
+    }
 
-if(getpid()==pids.pid40)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid42,SIGTERM);
-    kill(pids.pid43,SIGTERM);
-    exit(0);
-}
-if(getpid()==pids.pid39)
-{
-    printf("muriendo %d...\n",getpid());
-        kill(pids.pid40,SIGTERM);
-        kill(pids.pid41,SIGTERM);
-
-    exit(0);
+    if(getpid()==pids.pid40)
+    {
+        kill(pids.pid42,SIGTERM);
+        kill(pids.pid43,SIGTERM);
+        exit(0);
+    }
+    if(getpid()==pids.pid39)
+    {
+            kill(pids.pid40,SIGTERM);
+            kill(pids.pid41,SIGTERM);
+        exit(0);
 
 
-}
-if(getpid()==pids.pid38)
-{
-    printf("muriendo %d...\n",getpid());
+    }
+    if(getpid()==pids.pid38)
+    {
         kill(pids.pid39,SIGTERM);
         exit(0);
 
-}
-if(getpid()==pids.pid37)
-{
-    printf("muriendo %d...\n",getpid());
-    kill(pids.pid38,SIGTERM);
-    exit(0);
-}
-
-    
-
+    }
+    if(getpid()==pids.pid37)
+    {
+        kill(pids.pid38,SIGTERM);
+        exit(0);
+    }
 }
 
 // MANEJADORES DE SIGUSR2 (MATAR A N2 Y N3)
@@ -513,21 +457,12 @@ void sigusrHandler2(int sig) {
     printf("Terminando proceso...");
 }
 
-// MANEJADORES DE SIGUSR2 (MATAR A N2 Y N3)
-void sigusrHandler3(int sig) { 
-    if(getpid() == pids.pid39)
-    {
-        puts("Recibi la señal");
-    }
-
-}
-
-
-
 void eliminarArchivo() {
     const char *fileName = "pids.txt";
     if (remove(fileName) == 0) {
-        printf("Archivo eliminado exitosamente al finalizar el programa.\n");
+        char *mensaje = "Fichero eliminado correctamente\n";
+        write(STDOUT_FILENO, mensaje, 33);
+
     } else {
         perror("Error al eliminar el archivo");
     }
