@@ -4,7 +4,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-// Biblioteca mmap
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <string.h>
@@ -19,7 +18,6 @@ void eliminarArchivo();
 
 typedef struct {
     pid_t pids[4];              // Array para almacenar PIDs
-    int count;                 // Número actual de PIDs almacenados
 } shared_info;
 
 // Variable global para la memoria compartida
@@ -60,8 +58,6 @@ int main() {
     const char *f="pids.txt";
     int fd;
 
-   
-
     fd = open(f, O_RDWR | O_CREAT, 0666);
     if (fd == -1) {
         perror("Error al abrir el archivo");
@@ -82,7 +78,6 @@ int main() {
    close(fd);
 
     // CREACION DE MANEJADORES Y CONFIGURACION
-
     struct sigaction susr1;
     susr1.sa_handler = &sigusrHandler1;
     susr1.sa_flags = SA_RESTART;  // NO LETAL
@@ -122,7 +117,6 @@ int main() {
     sigdelset(&maskusr3, SIGINT);
 
     // ASIGNACION DE MANEJADORES
-
     if (sigaction(SIGTERM, &susr1, NULL) == -1) {
         perror("Error en sigaction usr1");
         exit(-1);
@@ -137,9 +131,6 @@ int main() {
         perror("Error en sigaction usr2");
         exit(-1);
     }
-
-    // Inicializar la estructura compartida
-    shared_data->count = 0;
 
   // CREACION DE PROCESOS
   pids.pid37 = getpid();

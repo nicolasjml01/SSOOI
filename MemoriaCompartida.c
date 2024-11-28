@@ -14,7 +14,6 @@ void sigusrHandler2(int sig);
 
 typedef struct {
     pid_t pids[3];              // Array para almacenar PIDs
-    int count;                 // Número actual de PIDs almacenados
 } shared_info;
 
 // Variable global para la memoria compartida
@@ -105,9 +104,6 @@ int main() {
         exit(-1);
     }
 
-    // Inicializar la estructura compartida
-    shared_data->count = 0;
-
     // CREACION DE PROCESOS
     pids.pid37 = getpid();
     printf("|_37: %d\n", pids.pid37);
@@ -151,8 +147,7 @@ int main() {
                                         case -1: perror("Error en el fork 46"); exit(-1);
                                         case 0:
                                             printf("|_46: %d\n", getpid());
-                                            shared_data->pids[shared_data->count++] = getpid();  // Registrar PID de 46
-                                            //pids.pid46 = getpid(); 
+                                            shared_data->pids[0] = getpid(); // Guardar PID en memoria compartida
                                             
                                         default:
                                             sigsuspend(&maskusr1);
