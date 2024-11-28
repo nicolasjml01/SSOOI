@@ -1,3 +1,8 @@
+/*Nicolás Joaquín Miranda Lizondo Y0676614Z
+ Marco Antonio Tovar Soto 70970286Z
+*/
+
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,7 +91,7 @@ int main() {
         exit(-1);
     }
 
-    // MASKS DE SUSPEND PARA SIGTERM (INFINITO)
+    // MASKS DE SUSPEND PARA SIGTERM
     sigset_t maskusr1;
     sigfillset(&maskusr1);
     sigdelset(&maskusr1, SIGTERM);
