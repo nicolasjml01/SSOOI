@@ -11,9 +11,6 @@
 
 // PROTOTIPO MANEJADORES
 void sigusrHandler1(int sig);
-void sigusrHandler2(int sig);
-
-// BORRAR???
 void eliminarArchivo();
 
 typedef struct {
@@ -50,8 +47,6 @@ typedef struct {
     pid_t pid58;
 } info;
 
-
-
 info pids;
 
 int main() {    
@@ -82,10 +77,6 @@ int main() {
     susr1.sa_handler = &sigusrHandler1;
     susr1.sa_flags = SA_RESTART;  // NO LETAL
 
-    struct sigaction susr2;
-    susr2.sa_handler = &sigusrHandler2;
-    susr2.sa_flags = SA_RESTART;  // NO LETAL
-
     // MASCARA DE SEÑALES
     sigset_t mask;
     sigfillset(&mask);
@@ -101,25 +92,10 @@ int main() {
     sigdelset(&maskusr1, SIGTERM);
     sigdelset(&maskusr1, SIGINT);
 
-    // MASKS DE SUSPEND PARA SIGTERM (KILL FINAL)
-    sigset_t maskusr2;
-    sigfillset(&maskusr2);
-    sigdelset(&maskusr2, SIGUSR2);
-    sigdelset(&maskusr2, SIGINT);
-
-    sigset_t maskusr3;
-    sigfillset(&maskusr3);
-    sigdelset(&maskusr3, SIGUSR1);
-    sigdelset(&maskusr3, SIGINT);
 
     // ASIGNACION DE MANEJADORES
     if (sigaction(SIGTERM, &susr1, NULL) == -1) {
         perror("Error en sigaction usr1");
-        exit(-1);
-    }
-
-    if (sigaction(SIGUSR2, &susr2, NULL) == -1) {
-        perror("Error en sigaction usr2");
         exit(-1);
     }
 
